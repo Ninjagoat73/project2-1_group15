@@ -1,0 +1,59 @@
+@startuml
+
+actor "Group Member" as GROUP_MEMBER
+
+rectangle "Unity Project" {
+  component "Learning Environment" as ENV
+  file "StatsRecorder.cs" as STATS
+}
+
+rectangle "Training" {
+  process "mlagents-learn" as TRAIN
+  database RESULTS [
+  results
+  ---
+  run_id_1_agent_x
+  run_id_2_agent_x
+  run_id_1_agent_y
+  run_id_1_agent_z
+  run_id_2_agent_z
+  run_id_3_agent_z
+        ...
+  ]
+}
+
+rectangle "Data Processing" {
+  component "data-collection.py" as COLLECTOR
+  folder CSV[
+  agent-data/
+  ---
+  agent_X_data.csv
+  agent_Y_data.csv
+  agent_Z_data.csv
+        ...
+  ]
+}
+
+rectangle "Analysis" {
+  component "ml_analysis.py" as ANALYZER
+  package "ML Algorithms" as ML_ALGO
+}
+
+rectangle "Visualization" {
+  component "Jupyter Notebook" as NOTEBOOK
+  artifact "Plots and Results" as PLOTS
+}
+
+STATS --> ENV: will be used to log custom data to TensorBoard
+ENV --> TRAIN : run mlagents-learn using terminal or shell script
+TRAIN --> RESULTS : data logged and saved to TensorBoard
+COLLECTOR --> RESULTS : reads
+COLLECTOR --> CSV : translates data to csv format
+ANALYZER --> CSV : reads
+ANALYZER --> ML_ALGO : uses
+ML_ALGO --> NOTEBOOK : exports results
+NOTEBOOK --> PLOTS : creates
+GROUP_MEMBER --> PLOTS: interprets results
+
+
+@enduml
