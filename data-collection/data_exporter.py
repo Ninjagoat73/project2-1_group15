@@ -2,19 +2,19 @@ import csv
 import datetime
 from hardware_info_getter import get_all_data
 
+def create_run_id(training_type):
+    now_str = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    run_id = f"{training_type}-{now_str}"
+    return run_id
 
-
-def create_static_csv(hardware_data: dict):
+def create_static_csv(hardware_data: dict, run_id: str):
 
     header = [
         'run_id', 'os', 'cpu', 'physical_cores', 'system_ram_gb',
         'gpu', 'GPU_ram_mb', 'training_type', 'batch_size', 'learning_rate'
     ]
 
-    now_str = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    training_type_1 = 'ppo'
 
-    run_id = f"{training_type_1}-{now_str}"
     filename = f"{run_id}-static.csv"
 
     data_dict = {
@@ -25,7 +25,7 @@ def create_static_csv(hardware_data: dict):
         'system_ram_gb': hardware_data.get('system_ram_gb'),
         'gpu': hardware_data.get('gpu'),
         'GPU_ram_mb': hardware_data.get('GPU_ram_mb'),
-        'training_type': training_type_1,
+        'training_type': "ppo",
         'batch_size': 1,
         'learning_rate': 2
     }
@@ -47,6 +47,15 @@ def create_static_csv(hardware_data: dict):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
+def create_training_csv():
+    pass
 
-data = get_all_data()
-create_static_csv(data)
+def create_summary_csv():
+    pass
+
+
+def create_all_csv():
+    hardware_data = get_all_data()
+    training_type = "ppo"
+    run_id = create_run_id(training_type)
+    create_static_csv(hardware_data, run_id)
