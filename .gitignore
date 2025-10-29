@@ -5,7 +5,8 @@
 /results
 # Output Builds
 /Builds
-
+# csv data
+*.csv
 # Training environments
 /envs
 
