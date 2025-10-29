@@ -1,0 +1,52 @@
+@startuml
+rectangle "Unity Project" {
+  folder SCRIPTS[
+    Project/Assets/ML-Agents/Examples/
+    ---
+    3DBall/Scripts/
+    ---
+    Ball3DAgent.cs
+    Ball3DHardagent.cs
+    ---
+    Soccer/Scripts/
+    ---
+    AgentSoccer.cs
+    SoccerBallController.cs
+    SoccerSettigs.cs
+    ---
+    ...
+    ]
+  file "StatsRecorder.cs" as STATS
+}
+rectangle "Training" {
+  process "mlagents-learn" as TRAIN
+  database RESULTS [
+  results
+  ---
+  run_id_1_agent_x
+  run_id_2_agent_x
+  run_id_1_agent_y
+  run_id_1_agent_z
+  run_id_2_agent_z
+  run_id_3_agent_z
+        ...
+  ]
+}
+
+rectangle "Data Processing" {
+  component "data-collection.py" as COLLECTOR
+  folder CSV[
+  agent-data/
+  ---
+        static.csv
+        summary.csv
+        training.csv
+  ]
+}
+
+STATS --> SCRIPTS: instantiated inside each script to log necessary data to TensorBoard
+SCRIPTS --> TRAIN : use mlagents-learn to run each script with the StatsRecorder object
+TRAIN --> RESULTS : data logged and saved to TensorBoard
+COLLECTOR --> RESULTS : reads
+COLLECTOR --> CSV : translates data to csv format
+@enduml
