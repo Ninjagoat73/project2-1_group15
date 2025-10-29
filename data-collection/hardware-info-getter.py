@@ -4,17 +4,16 @@ import subprocess
 from platform import uname
 import psutil
 import GPUtil
+import sys
 
 def get_size(bytes, suffix="B"):
-
     factor = 1024
     for unit in ["", "K", "M", "G", "T", "P"]:
         if bytes < factor:
             return f"{bytes:.2f}{unit}{suffix}"
         bytes /= factor
 
-def get_cpu_name():
-    system = platform.system()
+def get_cpu_name(system):
     if system == "Windows":
         try:
             import wmi
@@ -39,22 +38,23 @@ def get_cpu_name():
             return platform.processor()
     return platform.processor()
 
-def collect_system_info():
+def collect_system_info(system):
     data = {}
-    system = platform.system()
-
+    uname = platform.uname()
     if system == "Windows":
-        uname = platform.uname()
-        data["OS"] = f"{uname.system} {uname.release}"
+
+        if sys.getwindowsversion().build >= 22000:
+            data["OS"] = f"{uname.system} 11"
+        else:
+            data["OS"] = f"{uname.system} 10"
+
         data["Version"] = uname.version
         data["Machine"] = uname.machine
     elif system == "Linux":
-        uname = platform.uname()
         data["OS"] = f"{uname.system} {uname.release}"
         data["Version"] = uname.version
         data["Machine"] = uname.machine
     elif system == "Darwin":
-        uname = platform.uname()
         data["OS"] = "macOS"
         data["Version"] = uname.version
         data["Machine"] = uname.machine
@@ -62,31 +62,27 @@ def collect_system_info():
 
 
 
-def collect_cpu_info():
+def collect_cpu_info(system):
     data = {}
-    system = platform.system()
 
-    if system in ["Windows", "Linux", "Darwin"]:
-        data["CPU Name"] = get_cpu_name()
-        data["Physical Cores"] = psutil.cpu_count(logical=False)
-        data["Total Cores"] = psutil.cpu_count(logical=True)
-        freq = psutil.cpu_freq()
-        if freq:
-            data["Max Frequency (MHz)"] = f"{freq.max:.2f}"
-            data["Min Frequency (MHz)"] = f"{freq.min:.2f}"
+    data["CPU Name"] = get_cpu_name(system)
+    data["Physical Cores"] = psutil.cpu_count(logical=False)
+    data["Total Cores"] = psutil.cpu_count(logical=True)
+    freq = psutil.cpu_freq()
+    if freq:
+        data["Max Frequency (MHz)"] = f"{freq.max:.2f}"
+        data["Min Frequency (MHz)"] = f"{freq.min:.2f}"
     return data
 
 def collect_memory_info():
     data = {}
-    svmem = psutil.virtual_memory()
-    data["Total RAM"] = get_size(svmem.total)
+    mem = psutil.virtual_memory()
+    data["Total RAM"] = get_size(mem.total)
     return data
 
 
-def collect_gpu_info():
-
+def collect_gpu_info(system):
     data = {}
-    system = platform.system()
 
     if system == "Windows":
         try:
@@ -150,11 +146,12 @@ def collect_gpu_info():
     return data
 
 def export_to_csv(filename="hardware_info.csv"):
+    system = platform.system()
     all_data = {}
-    all_data.update(collect_system_info())
-    all_data.update(collect_cpu_info())
+    all_data.update(collect_system_info(system))
+    all_data.update(collect_cpu_info(system))
     all_data.update(collect_memory_info())
-    all_data.update(collect_gpu_info())
+    all_data.update(collect_gpu_info(system))
 
 
     with open(filename, "w", newline="", encoding="utf-8") as f:
