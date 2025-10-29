@@ -44,20 +44,20 @@ def collect_system_info(system):
     if system == "Windows":
 
         if sys.getwindowsversion().build >= 22000:
-            data["OS"] = f"{uname.system} 11"
+            data["os"] = f"{uname.system} 11"
         else:
-            data["OS"] = f"{uname.system} 10"
+            data["os"] = f"{uname.system} 10"
 
-        data["Version"] = uname.version
-        data["Machine"] = uname.machine
+        #data["Version"] = uname.version
+        #data["Machine"] = uname.machine
     elif system == "Linux":
-        data["OS"] = f"{uname.system} {uname.release}"
-        data["Version"] = uname.version
-        data["Machine"] = uname.machine
+        data["os"] = f"{uname.system} {uname.release}"
+        #data["Version"] = uname.version
+        #data["Machine"] = uname.machine
     elif system == "Darwin":
-        data["OS"] = "macOS"
-        data["Version"] = uname.version
-        data["Machine"] = uname.machine
+        data["os"] = "macOS"
+        #data["Version"] = uname.version
+        #data["Machine"] = uname.machine
     return data
 
 
@@ -65,19 +65,16 @@ def collect_system_info(system):
 def collect_cpu_info(system):
     data = {}
 
-    data["CPU Name"] = get_cpu_name(system)
-    data["Physical Cores"] = psutil.cpu_count(logical=False)
-    data["Total Cores"] = psutil.cpu_count(logical=True)
+    data["cpu"] = get_cpu_name(system)
+    data["physical_cores"] = psutil.cpu_count(logical=False)
+    #data["Total Cores"] = psutil.cpu_count(logical=True)
     freq = psutil.cpu_freq()
-    if freq:
-        data["Max Frequency (MHz)"] = f"{freq.max:.2f}"
-        data["Min Frequency (MHz)"] = f"{freq.min:.2f}"
     return data
 
 def collect_memory_info():
     data = {}
     mem = psutil.virtual_memory()
-    data["Total RAM"] = get_size(mem.total)
+    data["system_ram_gb"] = mem.total
     return data
 
 
@@ -90,20 +87,19 @@ def collect_gpu_info(system):
                 gpus = GPUtil.getGPUs()
                 if gpus:
                     for i, gpu in enumerate(gpus):
-                        data[f"GPU {i} Name"] = gpu.name
-                        data[f"GPU {i} Total Memory (MB)"] = gpu.memoryTotal
+                        data["gpu"] = gpu.name
+                        data["GPU_ram_mb"] = gpu.memoryTotal
                     return data
 
             import wmi
             c = wmi.WMI()
             for i, gpu in enumerate(c.Win32_VideoController()):
-                data[f"GPU {i} Name"] = gpu.Name
-                data[f"GPU {i} Driver Version"] = gpu.DriverVersion
+                data["gpu"] = gpu.Name
                 try:
                     vram_gb = int(gpu.AdapterRAM) / 1024**3
-                    data[f"GPU {i} VRAM (GB)"] = round(vram_gb, 2)
+                    data["GPU_ram_mb"] = round(vram_gb, 2)
                 except Exception:
-                    data[f"GPU {i} VRAM (GB)"] = "Unknown"
+                    data["GPU_ram_mb"] = "Unknown"
         except Exception as e:
             data["GPU Error"] = str(e)
 
@@ -112,10 +108,8 @@ def collect_gpu_info(system):
             import pyamdgpuinfo
             if pyamdgpuinfo.detect_gpus() > 0:
                 for i in range(pyamdgpuinfo.detect_gpus()):
-                    data[f"GPU {i} Name"] = pyamdgpuinfo.get_gpu_name(i)
-                    data[f"GPU {i} VRAM Total (MB)"] = round(pyamdgpuinfo.get_vram_size(i) / 1024**2, 2)
-                    data[f"GPU {i} Core Clock (MHz)"] = pyamdgpuinfo.get_gpu_clock(i)
-                    data[f"GPU {i} Memory Clock (MHz)"] = pyamdgpuinfo.get_mem_clock(i)
+                    data[f"gpu"] = pyamdgpuinfo.get_gpu_name(i)
+                    data[f"GPU_ram_mb"] = round(pyamdgpuinfo.get_vram_size(i) / 1024**2, 2)
                 return data
         except ImportError:
             pass
@@ -123,11 +117,11 @@ def collect_gpu_info(system):
         if GPUtil:
             gpus = GPUtil.getGPUs()
             for i, gpu in enumerate(gpus):
-                data[f"GPU {i} Name"] = gpu.name
-                data[f"GPU {i} Total Memory (MB)"] = gpu.memoryTotal
+                data[f"gpu"] = gpu.name
+                data[f"GPU_ram_mb"] = gpu.memoryTotal
 
         else:
-            data["GPU"] = "No GPU detected"
+            data["gpu"] = "No GPU detected"
 
     elif system == "Darwin":
         try:
@@ -136,14 +130,24 @@ def collect_gpu_info(system):
             )
             gpus = [line.strip() for line in out.split("\n") if "Chipset Model" in line or "VRAM" in line]
             for i, info in enumerate(gpus):
-                data[f"GPU {i} Info"] = info
+                data[f"gpu"] = info
         except Exception:
-            data["GPU"] = "macOS GPU detection failed"
+            data["gpu"] = "macOS GPU detection failed"
 
     else:
-        data["GPU"] = "Unsupported OS"
+        data["gpu"] = "Unsupported OS"
 
     return data
+
+def get_all_data():
+    system = platform.system()
+    all_data = {}
+    all_data.update(collect_system_info(system))
+    all_data.update(collect_cpu_info(system))
+    all_data.update(collect_memory_info())
+    all_data.update(collect_gpu_info(system))
+
+    return all_data
 
 def export_to_csv(filename="hardware_info.csv"):
     system = platform.system()
@@ -162,4 +166,5 @@ def export_to_csv(filename="hardware_info.csv"):
 
     print(f"Hardware information exported to {filename}")
 
-export_to_csv()
+if __name__ == "__main__":
+    export_to_csv()

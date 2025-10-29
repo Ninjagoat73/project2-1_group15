@@ -1,12 +1,7 @@
 Component,Value
-OS,Windows 11
-Version,10.0.26100
-Machine,AMD64
-CPU Name,AMD Ryzen 7 7735HS with Radeon Graphics
-Physical Cores,8
-Total Cores,16
-Max Frequency (MHz),3201.00
-Min Frequency (MHz),0.00
-Total RAM,15.19GB
-GPU 0 Name,NVIDIA GeForce RTX 4050 Laptop GPU
-GPU 0 Total Memory (MB),6141.0
+os,Windows 11
+cpu,AMD Ryzen 7 7735HS with Radeon Graphics
+physical_cores,8
+system_ram_gb,16312721408
+gpu,NVIDIA GeForce RTX 4050 Laptop GPU
+GPU_ram_mb,6141.0
