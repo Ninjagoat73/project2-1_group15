@@ -1,12 +1,7 @@
 Component,Value
-OS,Windows 10
-Version,10.0.19045
-Machine,AMD64
-CPU Name,AMD Ryzen 5 3600 6-Core Processor
-Physical Cores,6
-Total Cores,12
-Max Frequency (MHz),3600.00
-Min Frequency (MHz),0.00
-Total RAM,15.95GB
-GPU 0 Name,NVIDIA GeForce RTX 2060
-GPU 0 Total Memory (MB),6144.0
+os,Windows 11
+cpu,AMD Ryzen 7 7735HS with Radeon Graphics
+physical_cores,8
+system_ram_gb,16312721408
+gpu,NVIDIA GeForce RTX 4050 Laptop GPU
+GPU_ram_mb,6141.0
