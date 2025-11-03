@@ -11,7 +11,15 @@ def create_static_csv(run_id: str, hardware_data: dict, ):
 
     header = [
         'run_id', 'os', 'cpu', 'physical_cores', 'system_ram_gb',
-        'gpu', 'GPU_ram_mb', 'training_type', 'batch_size', 'learning_rate'
+        'gpu', 'GPU_ram_mb', 'cuda_version', 'training_type', 'batch_size',
+        'learning_rate', 'buffer_size', 'beta', 'episolon', 'lambd',
+        'num_epochs', 'learning_rate_schedule', 'normalize', 'hidden_units',
+        'num_layers', 'vis_encode_type', 'reward_extrinsic_gamma',
+        'reward_extrinsic_strength', 'keep_checkpoints', 'max_step',
+        'time_horizon', 'summary_freq', 'sequence_length', 'memory_size',
+        'curiosity_gamma', 'curiosity_strenght', 'curiosity_hidden_units',
+        'curiosity_learning_rate', 'save_steps', 'team_change', 'swap_steps',
+        'window', 'play_againts_latest_model_ratio', 'initial_elo'
     ]
 
 
