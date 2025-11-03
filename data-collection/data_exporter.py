@@ -116,7 +116,7 @@ def create_summary_csv(run_id: str, hardware_data: dict ):
 
 def create_all_csv():
     hardware_data = get_all_data()
-    yaml_data = extract_static_yaml_value("E:/project2-1/config/ppo/3DBall.yaml")
+    yaml_data = extract_static_yaml_value("../config/ppo/3DBall.yaml")
     training_type = yaml_data['training_type']
     run_id = create_run_id(training_type)
     create_static_csv(run_id, hardware_data, yaml_data)
