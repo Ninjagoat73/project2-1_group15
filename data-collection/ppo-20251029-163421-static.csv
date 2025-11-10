@@ -1,2 +1,0 @@
-run_id,os,cpu,physical_cores,system_ram_gb,gpu,GPU_ram_mb,training_type,batch_size,learning_rate
-ppo-20251029-163421,Windows 11,AMD Ryzen 7 7735HS with Radeon Graphics,8,16312721408,NVIDIA GeForce RTX 4050 Laptop GPU,6141.0,ppo,1,2
