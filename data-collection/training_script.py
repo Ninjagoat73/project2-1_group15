@@ -4,27 +4,18 @@ import sys
 import datetime
 import subprocess
 
-"""
-    for each file in folder:
-        read yaml
-        create run_id
-        call data_exporter to add static.csv entry
-        run environment executable (terminal?) to execute training
-"""
-def create_run_id(yaml_path: str):
-    now_str = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    run_id = f"{yaml_path}-{now_str}"
-    return run_id
-
 def run_training(yaml_path: str, run_id: str, executable_path: str):
-    data_exporter.create_static_csv(run_id, yaml_path)
-    subprocess.run([
+    result = subprocess.run([
         "mlagents-learn",
         "/Users/pedropianna/project2-1_group15/data-collection/test/3DBall.yaml",
         "--env=" + executable_path, # TODO: extract the type from yaml file
-        "--run-id=20251110-235215",
+        "--run-id=" + run_id,
         "--no-graphics"
     ])
+    if result.returncode != 0:
+        print("Training failed. No entry will be added to static.csv")
+        return
+    data_exporter.create_static_csv(run_id, yaml_path)
 
 if len(sys.argv) < 3:
     print("Usage: python3 training_scipt.py <path-to-yaml-folder> <path-to-executable>")
@@ -38,8 +29,7 @@ if not os.path.isdir(folder_path):
     sys.exit(0)
 
 for yaml in os.listdir(folder_path):
-    run_id = create_run_id(yaml)
+    run_id = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     yaml_path = os.path.join(folder_path, yaml)
     if os.path.isfile(yaml_path):
-        print(yaml_path)
         run_training(yaml_path, run_id, executable_path)
