@@ -4,9 +4,12 @@ from hardware_info_getter import get_all_data
 from yaml_reader import extract_static_yaml_value
 from static_dict import create_static_dict, header
 
-def create_static_csv(run_id: str, hardware_data: dict, yaml_data: dict):
-    print(hardware_data)
-    print(yaml_data)
+def create_static_csv(run_id: str, yaml_path: str):
+    yaml_data = extract_static_yaml_value(yaml_path)
+    hardware_data = get_all_data()
+    print("Hardware data to be added to entry: ", hardware_data)
+    print("YAML data to be added to entry:", yaml_data)
+
     data_dict = create_static_dict(run_id, hardware_data, yaml_data)
     filename = Path("static.csv")
     try:
@@ -24,11 +27,5 @@ def create_static_csv(run_id: str, hardware_data: dict, yaml_data: dict):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
-
-def create_all_csv(run_id: str, yaml_path: str):
-    hardware_data = get_all_data()
-    yaml_data = extract_static_yaml_value(yaml_path)
-    create_static_csv(run_id, hardware_data, yaml_data)
-
 if __name__ == "__main__":
-    create_all_csv("run_id_2", "../config/ppo/3DBall.yaml")
+    create_static_csv("run_id_1", "../config/ppo/FoodCollector.yaml")
