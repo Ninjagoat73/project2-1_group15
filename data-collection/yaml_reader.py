@@ -4,9 +4,13 @@ def extract_static_yaml_value(yaml_path):
     with open(yaml_path, 'r') as f:
         full_yaml = yaml.safe_load(f)
     try:
+        # game name is always the first thing after behaviours
+        behaviors = full_yaml.get("behaviors", {})
+        game_name = next(iter(behaviors.keys()), None)
         layer1 = next(iter(full_yaml.values()))
         data = next(iter(layer1.values()))
         dict_data = {}
+        dict_data.update({'game_name': game_name})
         dict_data.update({'training_type': data['trainer_type']})
         dict_data.update({'keep_checkpoints': data['keep_checkpoints']})
         dict_data.update({'max_steps': data['max_steps']})
