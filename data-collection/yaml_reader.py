@@ -2,7 +2,11 @@ import yaml
 
 def extract_static_yaml_value(yaml_path):
     with open(yaml_path, 'r') as f:
-        full_yaml = yaml.safe_load(f)
+        try:
+            full_yaml = yaml.safe_load(f)
+        except:
+            print(f"Error reading {yaml_path}")
+            return {}
     try:
         # game name is always the first thing after behaviours
         behaviors = full_yaml.get("behaviors", {})
