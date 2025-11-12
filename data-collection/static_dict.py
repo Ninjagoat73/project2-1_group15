@@ -12,6 +12,7 @@ def create_static_dict(run_id: str, hardware_data: dict, yaml_data: dict):
             'gpu': hardware_data.get('gpu'),
             'GPU_ram_mb': hardware_data.get('GPU_ram_mb'),
             'training_type': yaml_data.get('training_type'),
+            'game_name': yaml_data.get('game_name'),
             'batch_size': yaml_data.get('batch_size'),
             'learning_rate': yaml_data.get('learning_rate'),
             'buffer_size': yaml_data.get('buffer_size'),
@@ -46,7 +47,7 @@ def create_static_dict(run_id: str, hardware_data: dict, yaml_data: dict):
 
 header = [
         'run_id', 'os', 'cpu', 'physical_cores', 'system_ram_gb',
-        'gpu', 'GPU_ram_mb', 'cuda_version', 'training_type', 'batch_size',
+        'gpu', 'GPU_ram_mb', 'cuda_version', 'training_type', 'game_name', 'batch_size',
         'learning_rate', 'buffer_size', 'beta', 'episolon', 'lambd',
         'num_epochs', 'learning_rate_schedule', 'normalize', 'hidden_units',
         'num_layers', 'vis_encode_type', 'reward_extrinsic_gamma',

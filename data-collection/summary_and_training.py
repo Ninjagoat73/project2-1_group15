@@ -17,8 +17,3 @@ def create_summary_csv(run_id: str, hardware_data: dict ):
         'max_ram_used_mb', 'mean_ram_used_mb', 'max_gpu_usage_percent', 'mean_gpu_usage_percent', 'max_vram_used_mb', 'mean_vram_used_mb'
     ]
     filename = f"{run_id}-summary.csv"
-
-def create_run_id(training_type):
-    now_str = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    run_id = f"{training_type}-{now_str}"
-    return run_id
