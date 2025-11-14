@@ -17,7 +17,7 @@ public class Ball3DAgent : Agent
     EnvironmentParameters m_ResetParams;
     StatsRecorder recorder;
     PerformanceLogger logger;
-    int frequency = 100;
+    int frequency = 12000;
 
     int stepCount;
     Process mainProcess = Process.GetCurrentProcess();
@@ -29,6 +29,7 @@ public class Ball3DAgent : Agent
         recorder = Academy.Instance.StatsRecorder;
         logger = new PerformanceLogger(recorder, mainProcess, frequency);
         SetResetParameters();
+        logger.GetTotalCpuUsage();
         stepCount = 0;
     }
 
@@ -73,7 +74,6 @@ public class Ball3DAgent : Agent
             Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f)
         {
             SetReward(-1f);
-            logger.LogEpisodeTime();
             EndEpisode();
         }
         else
@@ -94,6 +94,7 @@ public class Ball3DAgent : Agent
             + gameObject.transform.position;
         //Reset the parameters when the Agent is reset.
         SetResetParameters();
+        logger.LogEpisodeTime();
     }
 
 

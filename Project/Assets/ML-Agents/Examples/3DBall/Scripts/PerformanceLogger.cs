@@ -7,6 +7,7 @@ public class PerformanceLogger
     private ProcessStruct mainProcessStruct;
     private DateTime lastStepMeasure;
     private DateTime lastEpisodeMeasure;
+    private PerformanceCounter cpuCounter;
     private StatsRecorder recorder;
     private Agent agent;
     private int frequency;
@@ -18,6 +19,7 @@ public class PerformanceLogger
         this.lastStepMeasure = DateTime.Now;
         this.lastEpisodeMeasure = DateTime.Now;
         this.frequency = frequency;
+        this.cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
         // this.agent = agent;
     }
     
@@ -39,6 +41,25 @@ public class PerformanceLogger
         return (float)cpuUsage;
     }
 
+    public float GetTotalCpuUsage()
+    {
+         var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    Arguments = "-c \"ps -A -o %cpu | awk '{s+=$1} END {print s \\\"%\\\"}'\"",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            
+            process.Start();
+            string output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+    }
+
     private float GetTotalMemoryUsage(ProcessStruct processStruct)
     {
         long memBytes = processStruct.process.WorkingSet64;
@@ -50,6 +71,7 @@ public class PerformanceLogger
     {
         LogData("Performance/cpuUsage(%)", GetCpuUsage(mainProcessStruct));
         LogData("Performance/memUsage(MB)", GetTotalMemoryUsage(mainProcessStruct));
+        LogData("Performance/totalCpuUsage(%)", GetTotalCpuUsage());
     }
 
     public void LogEpisodeTime()
