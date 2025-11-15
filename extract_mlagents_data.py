@@ -6,6 +6,7 @@ from tensorboard.backend.event_processing.event_accumulator import EventAccumula
 
 ROOT_LOG_DIR = './results'
 
+# Creating tag map to match data from tensorboard to columns in csv file
 TAG_MAP = {
 
     'Environment/Cumulative Reward': 'cumulative_reward',
@@ -24,7 +25,7 @@ TAG_MAP = {
 
 
 def get_log_directories():
-    # Function find all the directories with event file of training in the root folder.
+    # Function that finds all the directories with event file of training in the root folder.
     
     log_dirs = []
 
@@ -70,9 +71,8 @@ def extract_data_from_log(log_dir_info):
 
     try:
 
-        event_acc = EventAccumulator(log_dir, size_guidance={'scalars': 0, 'tensors': 0})
+        event_acc = EventAccumulator(log_dir, size_guidance = {'scalars': 0})
         event_acc.Reload()
-
 
         for tag in event_acc.Tags().get('scalars', []):
             if tag not in TAG_MAP:
@@ -80,14 +80,13 @@ def extract_data_from_log(log_dir_info):
 
             column_name = TAG_MAP[tag]
             events = event_acc.Scalars(tag)
-            tag_data = [(e.wall_time, e.step, e.value) for e in events]
+            tag_data = [(e.step, e.value) for e in events]
 
-            data_frame = pd.DataFrame(tag_data, columns = ['WallTime', 'Step', column_name])
+            data_frame = pd.DataFrame(tag_data, columns = ['Step', 'MetricValue'])
+            data_frame['ColumnName'] = column_name
             data_frame['Tag'] = tag
             data_frame['DataType'] = 'Scalar'
             all_data.append(data_frame)
-        
-
 
     except Exception as e:
         print(f" Failed to process logs for {run_id}. Error: {e}")
@@ -128,21 +127,13 @@ if __name__ == "__main__":
     
 
     if all_runs_data:
+
         final_data = pd.concat(all_runs_data, ignore_index=True)
         
-        FIXED_COLS = ['RunID', 'Tag', 'DataType', 'WallTime', 'Step']
-        # 2. Get all custom column names defined in the TAG_MAP
-        CUSTOM_COLS = list(TAG_MAP.values())
-        
-        ALL_COLS = FIXED_COLS + CUSTOM_COLS
-        
-        # 3. Use reindex to align the data: Fills missing columns (e.g., if a run lacks 'policy_loss') with NaN
-        final_data = final_data.reindex(columns=ALL_COLS)
-        
-        # 4. Sorting and Saving
-        final_data = final_data.sort_values(by=['RunID', 'Step', 'Tag'])
-        
-        
+        # Formating for csv file so that all the column values are in the same row
+        final_data = final_data.pivot(index=['RunID', 'Step'], columns='ColumnName', values='MetricValue')
+
+        final_data = final_data.reset_index()
 
         final_data.to_csv(OUTPUT_FILENAME, index=False)
         
