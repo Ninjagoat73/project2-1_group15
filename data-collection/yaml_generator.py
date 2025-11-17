@@ -263,7 +263,6 @@ def generate_yaml(training_type: str,
                  action_type: str = 'continuous',
                  output_dir: str = "generated",
                  behavior_name: str = "3DBall",
-                 run_id: Optional[str] = None,
                  **kwargs) -> Tuple[bool, str]:
     """
     Generate a complete ML-Agents training configuration YAML file.
@@ -280,8 +279,6 @@ def generate_yaml(training_type: str,
         enable_env_settings: Include environment/engine settings
         output_dir: Output directory for generated YAML
         behavior_name: Name of the behavior in the config
-        run_id: Optional run ID for checkpoint settings
-        **kwargs: Additional algorithm-specific overrides
 
     Returns:
         Tuple of (success: bool, path_or_error: str)
@@ -320,32 +317,10 @@ def generate_yaml(training_type: str,
         )
 
         full_config = {
-            "default_settings": None,
             "behaviors": {
                 behavior_name: behavior_config
             }
         }
-
-        # Add checkpoint settings
-        if run_id is None:
-            run_id = f"{algo}_{int(time.time())}_{random.randint(1000, 9999)}"
-
-        full_config["checkpoint_settings"] = {
-            "run_id": run_id,
-            "initialize_from": None,
-            "load_model": False,
-            "resume": False,
-            "force": kwargs.get('force', False),
-            "train_model": kwargs.get('train_model', False),
-            "inference": kwargs.get('inference', False),
-            "results_dir": kwargs.get('results_dir', 'results'),
-        }
-
-        full_config["torch_settings"] = {
-            "device": kwargs.get('device', None)
-        }
-
-        full_config["debug"] = kwargs.get('debug', False)
 
         os.makedirs(output_dir, exist_ok=True)
 
@@ -353,7 +328,7 @@ def generate_yaml(training_type: str,
         timestamp = int(time.time())
         random_suffix = random.randint(1000, 9999)
         filename = f"{algo}_{timestamp}_{random_suffix}.yaml"
-        output_path = os.path.join(output_dir, filename)
+        output_path = os.path.join(output_dir, behavior_name + "_" + filename)
 
         with open(output_path, "w", encoding="utf-8") as f:
             yaml.safe_dump(full_config, f, sort_keys=False, default_flow_style=False)
@@ -369,6 +344,7 @@ def generate_yaml(training_type: str,
 # ============================================================================
 
 def generate_batch(algorithms: List[str],
+                   behaviours: List[str] = ['3DBall','Crawler','GridFoodCollector','PushBlock'],
                   count_per_algorithm: int = 5,
                   output_dir: str = "generated",
                   **kwargs) -> List[Tuple[bool, str]]:
@@ -387,19 +363,20 @@ def generate_batch(algorithms: List[str],
     results = []
 
     for algo in algorithms:
-        for i in range(count_per_algorithm):
-            success, path = generate_yaml(
-                training_type=algo,
-                output_dir=output_dir,
-                behavior_name=f"Behavior_{algo.upper()}_{i+1}",
-                **kwargs
-            )
-            results.append((success, path))
+        for behaviour in behaviours:
+            for i in range(count_per_algorithm):
+                success, path = generate_yaml(
+                    training_type=algo,
+                    output_dir=output_dir,
+                    behavior_name=behaviour,
+                    **kwargs
+                )
+                results.append((success, path))
 
-            if success:
-                print(f"Generated {algo.upper()} config {i+1}/{count_per_algorithm}: {path}")
-            else:
-                print(f"Failed to generate {algo.upper()} config {i+1}: {path}")
+                if success:
+                    print(f"Generated {algo.upper()} config {i+1}/{count_per_algorithm}: {path}")
+                else:
+                    print(f"Failed to generate {algo.upper()} config {i+1}: {path}")
 
     return results
 
