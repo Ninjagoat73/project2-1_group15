@@ -1,0 +1,13 @@
+In order to use performance logging you have to first reinstall the mlagents python package.
+To do it:
+	1. Make sure you are using mlagents venv
+	2. Run "pip uninstall mlagents"
+	3. Go to ml-agents-envs folder
+	4. Run "pip install -e ."
+	5. Go to ml-agents fodler
+	6. Run "pip install -e ."
+
+This should do the trick. Now in tensorboard inside you will have graphs for:
+	1. Performance/totalCpuUsage
+	2. Performance/totalMemoryUsage
+	3. Performance/cpuFrequency
