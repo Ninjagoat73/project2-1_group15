@@ -333,7 +333,7 @@ def generate_yaml(training_type: str,
 # Batch Generation Function
 # ============================================================================
 
-def generate_batch(algorithms: List[str],
+def generate_batch(algorithms: List[str] = ['ppo','sac'],
                    behaviours: List[str] = ['3DBall','Crawler','GridFoodCollector','PushBlock'],
                   count_per_algorithm: int = 5,
                   output_dir: str = "generated",
