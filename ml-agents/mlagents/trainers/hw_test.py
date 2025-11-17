@@ -5,7 +5,7 @@ import psutil
 
 
 
-def get_hardware_stats() -> dict:
+def get_hardware_stats(interval_seconds : float = 0.1 ) -> dict:
 
 
     stats: dict = {
@@ -17,7 +17,7 @@ def get_hardware_stats() -> dict:
     }
 
     stats['cpu_frequency_mhz'] = psutil.cpu_freq()
-    stats['cpu_usage_percent'] = psutil.cpu_percent()
+    stats['cpu_usage_percent'] = psutil.cpu_percent(interval = interval_seconds)
     stats['ram_usage_mb'] = round(psutil.virtual_memory().used / 1024 / 1024, 0)
 
     nvidia = False
