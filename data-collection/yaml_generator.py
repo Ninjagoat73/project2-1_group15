@@ -42,7 +42,6 @@ TIME_HORIZONS = [64, 128, 256, 512, 1024, 2048]
 
 # NOTE:
 # if it's not feasible to do a full network search on all network size combinations, \
-# we could also define something like complexity classes to sample from?
 # Also, SAC typically uses larger networks, so might want to bias towards 128+, 2+ layers
 HIDDEN_UNITS = [32, 64, 128, 256, 512]
 NUM_LAYERS = [1, 2, 3]
@@ -103,7 +102,6 @@ def make_ppo_config(max_steps: int,
         max_steps: Total training steps
         time_horizon: Episode length (auto-generated if None)
         action_type: 'continuous' or 'discrete'
-        complexity: 'low', 'medium', or 'high' network complexity
         enable_schedules: Whether to use learning rate schedules
         **kwargs: Override specific parameters
 
@@ -147,14 +145,12 @@ def make_ppo_config(max_steps: int,
             "lambd": lambd,
             "num_epoch": num_epoch,
             "learning_rate_schedule": lr_schedule,
-            "beta_schedule": lr_schedule if enable_schedules else 'constant',
-            "epsilon_schedule": lr_schedule if enable_schedules else 'constant',
         },
         "network_settings": {
             "normalize": kwargs.get('normalize', random.choice(NORMALIZE_OPTIONS)),
             "hidden_units": hidden_units,
             "num_layers": num_layers,
-            #"vis_encode_type": kwargs.get('vis_encode_type', 'simple'),
+            "vis_encode_type": kwargs.get('vis_encode_type', 'simple'),
         },
         "reward_signals": {
             "extrinsic": {
@@ -162,12 +158,10 @@ def make_ppo_config(max_steps: int,
                 "strength": 1.0,
             }
         },
+        "keep_checkpoints": kwargs.get('keep_checkpoints', 5),
         "max_steps": max_steps,
         "time_horizon": time_horizon,
         "summary_freq": kwargs.get('summary_freq', random.choice([10000, 25000, 50000])),
-        "checkpoint_interval": kwargs.get('checkpoint_interval', random.choice([100000, 250000, 500000])),
-        "keep_checkpoints": kwargs.get('keep_checkpoints', 5),
-        "threaded": kwargs.get('threaded', False),
     }
 
     return config
@@ -186,7 +180,6 @@ def make_sac_config(max_steps: int,
         max_steps: Total training steps
         time_horizon: Episode length (auto-generated if None)
         action_type: 'continuous' or 'discrete'
-        complexity: 'low', 'medium', or 'high' network complexity
         **kwargs: Override specific parameters
 
     Returns:
@@ -216,26 +209,26 @@ def make_sac_config(max_steps: int,
     # Buffer and update settings
     buffer_init_steps = kwargs.get('buffer_init_steps', random.choice(SAC_BUFFER_INIT_STEPS_OPTIONS))
     steps_per_update = kwargs.get('steps_per_update', random.choice(SAC_STEPS_PER_UPDATE_OPTIONS))
-    save_replay_buffer = kwargs.get('save_replay_buffer', SAC_SAVE_REPLAY_BUFFER)
 
     config = {
         "trainer_type": "sac",
         "hyperparameters": {
+            "learning_rate": learning_rate,
+            "learning_rate_schedule": "constant",
             "batch_size": batch_size,
             "buffer_size": buffer_size,
-            "learning_rate": learning_rate,
+            "buffer_init_steps": buffer_init_steps,
             "tau": tau,
             "steps_per_update": steps_per_update,
+            "save_replay_buffer": 'false',
             "init_entcoef": init_entcoef,
-            "buffer_init_steps": buffer_init_steps,
-            "save_replay_buffer": save_replay_buffer,
-            "learning_rate_schedule": "constant",
+            "reward_signal_steps_per_update": 10.0
         },
         "network_settings": {
             "normalize": kwargs.get('normalize', random.choice(NORMALIZE_OPTIONS)),
             "hidden_units": hidden_units,
             "num_layers": num_layers,
-            #"vis_encode_type": kwargs.get('vis_encode_type', 'simple'),
+            "vis_encode_type": kwargs.get('vis_encode_type', 'simple'),
         },
         "reward_signals": {
             "extrinsic": {
@@ -243,12 +236,10 @@ def make_sac_config(max_steps: int,
                 "strength": 1.0,
             }
         },
+        "keep_checkpoints": kwargs.get('keep_checkpoints', 5),
         "max_steps": max_steps,
         "time_horizon": time_horizon,
         "summary_freq": kwargs.get('summary_freq', random.choice([10000, 25000, 50000])),
-        "checkpoint_interval": kwargs.get('checkpoint_interval', random.choice([100000, 250000, 500000])),
-        "keep_checkpoints": kwargs.get('keep_checkpoints', 5),
-        "threaded": kwargs.get('threaded', random.choice(SAC_THREADING)),  # SAC benefits from threading
     }
 
     return config
@@ -286,7 +277,6 @@ def generate_yaml(training_type: str,
     Example:
         >>> success, path = generate_yaml('ppo', max_steps=500000,
         ...                               num_parallel_envs=4,
-        ...                               complexity='high')
         >>> print(f"Generated: {path}")
     """
     try:
