@@ -29,7 +29,6 @@ public class Ball3DAgent : Agent
         recorder = Academy.Instance.StatsRecorder;
         logger = new PerformanceLogger(recorder, mainProcess, frequency);
         SetResetParameters();
-        logger.GetTotalCpuUsage();
         stepCount = 0;
     }
 
@@ -49,7 +48,7 @@ public class Ball3DAgent : Agent
         var actionZ = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f);
         var actionX = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f);
 
-        recorder.Add("frequency", frequency, StatAggregationMethod.Average);
+        // recorder.Add("frequency", frequency, StatAggregationMethod.Average);
         if (stepCount == 0)
         {
             logger.LogStepTime();
