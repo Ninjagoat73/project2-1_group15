@@ -335,7 +335,7 @@ def generate_yaml(training_type: str,
 
 def generate_batch(algorithms: List[str] = ['ppo','sac'],
                    behaviours: List[str] = ['3DBall','Crawler','GridFoodCollector','PushBlock'],
-                  count_per_algorithm: int = 5,
+                  count_per_algorithm: int = 20,
                   output_dir: str = "generated",
                   **kwargs) -> List[Tuple[bool, str]]:
     """
@@ -351,7 +351,7 @@ def generate_batch(algorithms: List[str] = ['ppo','sac'],
         List of (success, path_or_error) tuples
     """
     results = []
-
+    behaviours = ['3DBall'] # TEMPORARY
     for algo in algorithms:
         for behaviour in behaviours:
             for i in range(count_per_algorithm):
