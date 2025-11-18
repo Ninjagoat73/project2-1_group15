@@ -70,7 +70,7 @@ class TrainerController:
         np.random.seed(training_seed)
         torch_utils.torch.manual_seed(training_seed)
         self.rank = get_rank()
-        
+
         self._log_performance_semaphore = threading.Semaphore(0)
         self._kill_thread_flag = False
 
@@ -172,13 +172,15 @@ class TrainerController:
 
     def _log_performance_data(self, stats_reporter : StatsReporter):
         while(True):
-            if(self._kill_thread_flag):    
+            if(self._kill_thread_flag):
                 return
             self._log_performance_semaphore.acquire()
             stats = get_hardware_stats(0.5)
-            stats_reporter.add_stat("Performance/totalCpuUsage", stats['cpu_usage_percent'])
+            stats_reporter.add_stat("Performance/cpuUsagePercent", stats['cpu_usage_percent'])
             stats_reporter.add_stat("Performance/cpuFrequency", stats['cpu_frequency_mhz'][0])
-            stats_reporter.add_stat("Performance/totalMemoryUsage", stats['ram_usage_mb'])
+            stats_reporter.add_stat("Performance/ramUsageMB", stats['ram_usage_mb'])
+            stats_reporter.add_stat("Performance/gpuUsagePercent", stats['cpu_usage_percent'])
+            stats_reporter.add_stat("Performance/vramUsageMB", stats['memory_usage_mb'])
 
 
     @timed
@@ -206,7 +208,7 @@ class TrainerController:
                     self.reset_env_if_ready(env_manager)
             # Stop advancing trainers
             self.join_threads()
-            
+
             self._kill_thread_flag = True
             self._log_performance_semaphore.release()
             performance_log_thread.join()
