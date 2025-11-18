@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 
 import GPUtil
 import psutil
@@ -36,10 +36,10 @@ def get_hardware_stats(interval_seconds : float = 0.1 ) -> dict:
          pass
 
     if not nvidia:
-         stats['gpu_usage_percent'] = None
-         stats['vram_usage_mb'] = None
+         stats['gpu_usage_percent'] = -1
+         stats['vram_usage_mb'] = -1
 
-    print(stats)
+   # print(stats)
     return stats
 
 if __name__ == '__main__':

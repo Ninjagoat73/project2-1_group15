@@ -177,10 +177,10 @@ class TrainerController:
             self._log_performance_semaphore.acquire()
             stats = get_hardware_stats(0.5)
             stats_reporter.add_stat("Performance/cpuUsagePercent", stats['cpu_usage_percent'])
-            stats_reporter.add_stat("Performance/cpuFrequency", stats['cpu_frequency_mhz'][0])
+            stats_reporter.add_stat("Performance/cpuFrequency", stats['cpu_frequency_mhz'])
             stats_reporter.add_stat("Performance/ramUsageMB", stats['ram_usage_mb'])
-            stats_reporter.add_stat("Performance/gpuUsagePercent", stats['cpu_usage_percent'])
-            stats_reporter.add_stat("Performance/vramUsageMB", stats['memory_usage_mb'])
+            stats_reporter.add_stat("Performance/gpuUsagePercent", stats['gpu_usage_percent'])
+            stats_reporter.add_stat("Performance/vramUsageMB", stats['vram_usage_mb'])
 
 
     @timed
