@@ -7,6 +7,8 @@ import threading
 from typing import Dict, Set, List
 from collections import defaultdict
 
+from mlagents.trainers.hw_test import get_hardware_stats
+
 import numpy as np
 
 from mlagents_envs.logging_util import get_logger
@@ -23,6 +25,7 @@ from mlagents_envs.timers import (
     merge_gauges,
 )
 from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.trainer import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
@@ -67,6 +70,9 @@ class TrainerController:
         np.random.seed(training_seed)
         torch_utils.torch.manual_seed(training_seed)
         self.rank = get_rank()
+
+        self._log_performance_semaphore = threading.Semaphore(0)
+        self._kill_thread_flag = False
 
     @timed
     def _save_models(self):
@@ -164,6 +170,19 @@ class TrainerController:
         for behavior_id in behavior_ids:
             self._create_trainer_and_manager(env_manager, behavior_id)
 
+    def _log_performance_data(self, stats_reporter : StatsReporter):
+        while(True):
+            if(self._kill_thread_flag):
+                return
+            self._log_performance_semaphore.acquire()
+            stats = get_hardware_stats(0.5)
+            stats_reporter.add_stat("Performance/cpuUsagePercent", stats['cpu_usage_percent'])
+            stats_reporter.add_stat("Performance/cpuFrequency", stats['cpu_frequency_mhz'][0])
+            stats_reporter.add_stat("Performance/ramUsageMB", stats['ram_usage_mb'])
+            stats_reporter.add_stat("Performance/gpuUsagePercent", stats['cpu_usage_percent'])
+            stats_reporter.add_stat("Performance/vramUsageMB", stats['memory_usage_mb'])
+
+
     @timed
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_output_path(self.output_path)
@@ -171,12 +190,28 @@ class TrainerController:
             # Initial reset
             self._reset_env(env_manager)
             self.param_manager.log_current_lesson()
+            step_count_added = 0
+            threadReporter = None
+            for trainer in self.trainers.values():
+                threadReporter = trainer.stats_reporter
+                break
+            performance_log_thread = threading.Thread(target=self._log_performance_data, args=[threadReporter])
+            performance_log_thread.start()
             while self._not_done_training():
+                if step_count_added >= 500:
+                    # print(f"Added steps : {step_count_added}")
+                    self._log_performance_semaphore.release()
+                    step_count_added = 0
                 n_steps = self.advance(env_manager)
+                step_count_added += n_steps
                 for _ in range(n_steps):
                     self.reset_env_if_ready(env_manager)
             # Stop advancing trainers
             self.join_threads()
+
+            self._kill_thread_flag = True
+            self._log_performance_semaphore.release()
+            performance_log_thread.join()
         except (
             KeyboardInterrupt,
             UnityCommunicationException,
@@ -184,6 +219,9 @@ class TrainerController:
             UnityCommunicatorStoppedException,
         ) as ex:
             self.join_threads()
+            self._kill_thread_flag = True
+            self._log_performance_semaphore.release()
+            performance_log_thread.join()
             self.logger.info(
                 "Learning was interrupted. Please wait while the graph is generated."
             )
