@@ -21,6 +21,12 @@ TAG_MAP = {
     'Custom/Reward': 'reward',
     'Custom/Time_Elapsed_ms': 'time_elapsed_ms',
     'Custom/Steps_Per_Second': 'steps_per_second',
+
+    'Performance/cpuUsagePercent' : 'cpu_usage_percent',
+    'Performance/cpuFrequency' : 'cpu_frequency_mhz',
+    'Performance/ramUsageMB' : 'ram_usage_mb',
+    'Performance/gpuUsagePercent' : 'gpu_usage_percent',
+    'Performance/vramUsageMB' : 'vram_usage_mb',
 }
 
 
