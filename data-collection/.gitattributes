@@ -1,0 +1,2 @@
+executables_macos filter=lfs diff=lfs merge=lfs -text
+executables_windows filter=lfs diff=lfs merge=lfs -text
