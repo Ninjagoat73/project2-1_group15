@@ -30,19 +30,7 @@ def create_static_dict(run_id: str, hardware_data: dict, yaml_data: dict):
             'keep_checkpoints': yaml_data.get('keep_checkpoints'),
             'max_steps': yaml_data.get('max_steps'),
             'time_horizon': yaml_data.get('time_horizon'),
-            'summary_freq': yaml_data.get('summary_freq'),
-           # 'sequence_length': yaml_data.get('sequence_length'),
-           # 'memory_size': yaml_data.get('memory_size'),
-           # 'curiosity_gamma': yaml_data.get('curiosity_gamma'),
-           # 'curiosity_strength': yaml_data.get('curiosity_strength'),
-           # 'curiosity_hidden_units': yaml_data.get('curiosity_hidden_units'),
-           # 'curiosity_learning_rate': yaml_data.get('curiosity_learning_rate'),
-           # 'save_steps': yaml_data.get('save_steps'),
-           # 'team_change': yaml_data.get('team_change'),
-           # 'swap_steps': yaml_data.get('swap_steps'),
-           # 'window': yaml_data.get('window'),
-           # 'play_againts_latest_model_ratio': yaml_data.get('play_againts_latest_model_ratio'),
-           # 'initial_elo': yaml_data.get('initial_elo')
+            'summary_freq': yaml_data.get('summary_freq')
         }
 
 header = [
@@ -53,10 +41,4 @@ header = [
         'num_layers', 'vis_encode_type', 'reward_extrinsic_gamma',
         'reward_extrinsic_strength', 'keep_checkpoints', 'max_steps',
         'time_horizon', 'summary_freq'
-       # 'sequence_length', 'memory_size',
-       # 'curiosity_gamma', 'curiosity_strength', 'curiosity_hidden_units',
-       # 'curiosity_learning_rate', 'save_steps', 'team_change', 'swap_steps',
-       # 'window', 'play_againts_latest_model_ratio', 'initial_elo'
     ]
-
-
