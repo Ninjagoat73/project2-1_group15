@@ -15,21 +15,22 @@ public class Ball3DAgent : Agent
     public bool useVecObs;
     Rigidbody m_BallRb;
     EnvironmentParameters m_ResetParams;
-    StatsRecorder recorder;
+    // Add from here
     PerformanceLogger logger;
-    int frequency = 12000;
+    int frequency = 1000;
 
-    int stepCount;
+    int stepCount = 0;
     Process mainProcess = Process.GetCurrentProcess();
+    // To here
 
     public override void Initialize()
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_ResetParams = Academy.Instance.EnvironmentParameters;
-        recorder = Academy.Instance.StatsRecorder;
-        logger = new PerformanceLogger(recorder, mainProcess, frequency);
+        // Add from here
+        logger = new PerformanceLogger(Academy.Instance.StatsRecorder, mainProcess, frequency);
+        // To here
         SetResetParameters();
-        stepCount = 0;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -48,15 +49,15 @@ public class Ball3DAgent : Agent
         var actionZ = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f);
         var actionX = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f);
 
-        // recorder.Add("frequency", frequency, StatAggregationMethod.Average);
+        // Add from here
         if (stepCount == 0)
         {
-            logger.LogStepTime();
+            logger.LogStepTimeAndStepPerSecond();
             logger.LogPerformanceData();
+            logger.LogTimeElapsed();
         }
+        // To here
         
-        // recorder.Add("cpuUsage", cpuCounter.NextValue(), StatAggregationMethod.Average);
-
         if ((gameObject.transform.rotation.z < 0.25f && actionZ > 0f) ||
             (gameObject.transform.rotation.z > -0.25f && actionZ < 0f))
         {
@@ -79,8 +80,10 @@ public class Ball3DAgent : Agent
         {
             SetReward(0.1f);
         }
+        // Add from here
         stepCount++;
         if (stepCount >= frequency) stepCount = 0;
+        // To here
     }
 
     public override void OnEpisodeBegin()
@@ -93,7 +96,9 @@ public class Ball3DAgent : Agent
             + gameObject.transform.position;
         //Reset the parameters when the Agent is reset.
         SetResetParameters();
+        // Add from here
         logger.LogEpisodeTime();
+        // To here
     }
 
 
