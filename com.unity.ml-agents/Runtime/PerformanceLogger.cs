@@ -17,22 +17,10 @@ public class PerformanceLogger
     //  which lines to add can be found in Project/Assets/ML-Agents/Examples/3DBall/Scripts/Ball3DAgent.cs
     //  How to use in game's agent script (Ball3DAgent.cs, FoodCollector.cs, GridAgent.cs etc.):
     //  Add follwing lines in class attribute fields:
-    //  - PerformanceLogger logger;
-    //  - int frequency = 12000; // [default value]
-    //  - int stepCount = 0;
-    //  Add following lines in specific methods:
-    //  - in method Initialize(): logger = new PerformanceLogger(recorder, mainProcess, frequency);
-    //  - at the beginning of OnActionReceived() method add these lines
-    //  if (stepCount == 0)
-    //  {
-    //      logger.LogStepTimeAndStepPerSecond();
-    //      logger.LogPerformanceData();
-    //      logger.LogElapsedTime();
-    //  }
-    //  - at the end of OnActionReceived() method add these lines
-    //      stepCount++;
-    //      if (stepCount >= frequency) stepCount = 0;
-    //  - at the end of OnEpisodeBegin() add this line: logger.LogEpisodeTime();
+    //  -- at the end of Initialize add line: base.InitializeLoggingVariables();
+    //  -- at the beginning of OnActionReceived() add line: base.CheckAndLogFirstPart();
+    //  -- at the end of OnActionReceived() add line: base.ManageStepCount();
+    //  -- at the end of OnEpisodeBegin() add line: base.LogEpisodeTime();
     /// </summary>
     /// <param name="recorder">StatsRecorder object associated with current training, used for logging data into tensorboard</param>
     /// <param name="mainProcess">Process object associated with the running unity game</param>

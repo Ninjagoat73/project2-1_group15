@@ -15,22 +15,13 @@ public class Ball3DAgent : Agent
     public bool useVecObs;
     Rigidbody m_BallRb;
     EnvironmentParameters m_ResetParams;
-    // Add from here
-    PerformanceLogger logger;
-    int frequency = 1000;
-
-    int stepCount = 0;
-    Process mainProcess = Process.GetCurrentProcess();
-    // To here
-
     public override void Initialize()
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_ResetParams = Academy.Instance.EnvironmentParameters;
-        // Add from here
-        logger = new PerformanceLogger(Academy.Instance.StatsRecorder, mainProcess, frequency);
-        // To here
         SetResetParameters();
+        // Add next line
+        base.InitializeLoggingVariables();
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -46,17 +37,11 @@ public class Ball3DAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        // Add next line
+        base.CheckAndLogFirstPart();
+
         var actionZ = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f);
         var actionX = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f);
-
-        // Add from here
-        if (stepCount == 0)
-        {
-            logger.LogStepTimeAndStepPerSecond();
-            logger.LogPerformanceData();
-            logger.LogTimeElapsed();
-        }
-        // To here
         
         if ((gameObject.transform.rotation.z < 0.25f && actionZ > 0f) ||
             (gameObject.transform.rotation.z > -0.25f && actionZ < 0f))
@@ -80,10 +65,8 @@ public class Ball3DAgent : Agent
         {
             SetReward(0.1f);
         }
-        // Add from here
-        stepCount++;
-        if (stepCount >= frequency) stepCount = 0;
-        // To here
+        // Add next line
+        base.ManageStepCount();
     }
 
     public override void OnEpisodeBegin()
@@ -96,9 +79,8 @@ public class Ball3DAgent : Agent
             + gameObject.transform.position;
         //Reset the parameters when the Agent is reset.
         SetResetParameters();
-        // Add from here
-        logger.LogEpisodeTime();
-        // To here
+        // Add next line 
+        base.LogEpisodeTime();
     }
 
 
