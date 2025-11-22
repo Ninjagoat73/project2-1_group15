@@ -5,6 +5,8 @@ import sys
 import datetime
 import subprocess
 import yaml_generator
+import platform
+import sys
 
 def run_training(yaml_path: str, run_id: str, executable_path: str):
     result = subprocess.run([
@@ -25,6 +27,7 @@ if len(sys.argv) < 2:
 
 yamls = yaml_generator.generate_batch()
 executable_folder_path = sys.argv[1]
+os_name = platform.system()
 
 if not os.path.isdir(executable_folder_path):
     print(f"Error: '{executable_folder_path}' is not a valid directory.")
@@ -42,6 +45,9 @@ for success, yaml in yamls:
         print(f"File being parsed: {yaml}")
         yaml_dict = yaml_reader.extract_static_yaml_value(yaml)
         game_name = yaml_dict['game_name']
-        executable_path = executable_folder_path + "/" + game_name + ".app"
+        if os_name == "Darwin":
+            executable_path = executable_folder_path + "/" + game_name + ".app"
+        else:
+            executable_path = executable_folder_path + "\\" + game_name
         print("executable path;", executable_path)
         run_training(yaml, run_id, executable_path)
