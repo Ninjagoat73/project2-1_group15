@@ -14,19 +14,25 @@ TAG_MAP = {
 
     'Losses/Policy Loss': 'policy_loss',
     'Losses/Value Loss': 'loss_value',
+
     'Policy/Entropy': 'entropy',
-    'Policy/Extrinsic Value Estimate': 'value_estimate',
-
-    'Custom/Reward_Mean_100': 'reward_mean_100',
-    'Custom/Reward': 'reward',
-    'Custom/Time_Elapsed_ms': 'time_elapsed_ms',
-    'Custom/Steps_Per_Second': 'steps_per_second',
-
+    'Policy/Extrinsic Value Estimate': 'extrinsic_value_estimate',
+    'Policy/Beta' : 'beta',
+    'Policy/Epsilon' : 'epsilon',
+    'Policy/Extrinsic Reward' : 'extrinsic_reward',
+    'Policy/Learning Rate' : 'learning_rate',
+    
     'Performance/cpuUsagePercent' : 'cpu_usage_percent',
     'Performance/cpuFrequency' : 'cpu_frequency_mhz',
+    'Performance/gameCpuUsage(%)' : 'game_cpu_usage',
+    'Performance/gameMemoryUsage(MB)' : 'game_memory_usage(MB)',
     'Performance/ramUsageMB' : 'ram_usage_mb',
     'Performance/gpuUsagePercent' : 'gpu_usage_percent',
     'Performance/vramUsageMB' : 'vram_usage_mb',
+    'Performance/episodeTime(s)' : 'episode_time',
+    'Performance/stepLength(ms)' : 'step_length(ms)',
+    'Performance/stepsPerSecond': 'steps_per_second',
+    'Performance/timeElapsed(s)' : 'time_elapsed(s)',
 }
 
 
