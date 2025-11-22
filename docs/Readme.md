@@ -22,8 +22,9 @@ Since we've modified the ML Agents library, we need to compile it ourselves (not
 2. cd into the repository
 3. Create a conda environment using ```conda create -n mlagents python=3.10.12 && conda activate mlagents```
 4. Build grpcio wheel ``` conda install "grpcio=1.48.2" -c conda-forge ```
-5. Install ml-agents-envs ``` cd ml-agents-envs && pip install -e . ```
-6. Install ml-agents ``` cd ../ml-agents && pip install -e . ```
+5. Install our requirements ``` pip install -r requirements.txt ``` (or pip3)
+6. Install ml-agents-envs ``` cd ml-agents-envs && pip install -e . ```
+7. Install ml-agents ``` cd ../ml-agents && pip install -e . ```
 
 Use [this guide](https://docs.unity3d.com/Packages/com.unity.ml-agents@4.0/manual/Installation.html) for troubleshooting
 
