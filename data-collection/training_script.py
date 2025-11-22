@@ -25,7 +25,7 @@ if len(sys.argv) < 2:
     print("Usage: python3 training_scipt.py <path-to-executable-folder>")
     sys.exit(0)
 
-yamls = yaml_generator.generate_batch()
+yamls = yaml_generator.generate_batch(count_per_algorithm=125)
 executable_folder_path = sys.argv[1]
 os_name = platform.system()
 
