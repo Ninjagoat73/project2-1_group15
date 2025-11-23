@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 header = [
-    'run_id', 'time_to_max_reward_sec', 'total_duration_sec',
+    'RunID', 'time_to_max_reward_sec', 'total_duration_sec',
     'mean_policy_loss', 'mean_value_loss', 'mean_entropy', 'batch_size', 'final_entropy', 'max_cpu_usage_percent',
     'mean_cpu_usage_percent',
     'max_ram_used_mb', 'mean_ram_used_mb', 'max_gpu_usage_percent', 'mean_gpu_usage_percent', 'max_vram_used_mb',
