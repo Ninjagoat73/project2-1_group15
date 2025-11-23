@@ -8,7 +8,7 @@
 ```bash
 python3 training_script.py <executable-folder>
 ```
-where executable-folder is the folder containing the executables generated in unity. The folder sturcture should look like this:
+where executable-folder is the folder containing the executables generated in unity. The folder structure should look like this: (it will look different for Windows users, you need to name the folder 3DBall, etc)
 
 
 ```bash
