@@ -3,6 +3,8 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Random = UnityEngine.Random;
+using System.Diagnostics;
+using System;
 
 public class Ball3DAgent : Agent
 {
@@ -13,12 +15,13 @@ public class Ball3DAgent : Agent
     public bool useVecObs;
     Rigidbody m_BallRb;
     EnvironmentParameters m_ResetParams;
-
     public override void Initialize()
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_ResetParams = Academy.Instance.EnvironmentParameters;
         SetResetParameters();
+        // Add next line
+        base.InitializeLoggingVariables();
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -34,9 +37,12 @@ public class Ball3DAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        // Add next line
+        base.CheckAndLogFirstPart();
+
         var actionZ = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f);
         var actionX = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f);
-
+        
         if ((gameObject.transform.rotation.z < 0.25f && actionZ > 0f) ||
             (gameObject.transform.rotation.z > -0.25f && actionZ < 0f))
         {
@@ -59,6 +65,8 @@ public class Ball3DAgent : Agent
         {
             SetReward(0.1f);
         }
+        // Add next line
+        base.ManageStepCount();
     }
 
     public override void OnEpisodeBegin()
@@ -71,7 +79,10 @@ public class Ball3DAgent : Agent
             + gameObject.transform.position;
         //Reset the parameters when the Agent is reset.
         SetResetParameters();
+        // Add next line 
+        base.LogEpisodeTime();
     }
+
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
