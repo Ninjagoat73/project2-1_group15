@@ -125,21 +125,21 @@ if __name__ == "__main__":
     for log_info in log_directories:
         data_frame_run = extract_data_from_log(log_info)
         if not data_frame_run.empty:
-            if log_info['run_id'] in training_data['RunID']:
+            if log_info['run_id'] in training_data['RunID'].values:
                 print(f"run_id {log_info['run_id']} already detected. Skipping this entry...")
                 continue
+            data_frame_run = data_frame_run.pivot(index=['RunID', 'Step'], columns='ColumnName', values='MetricValue')
+            data_frame_run = data_frame_run.reset_index()
             training_data = pd.concat([training_data, data_frame_run], ignore_index=True)
+
             print(f"Extracted {len(data_frame_run)} total data points from {log_info['run_id']}")
         else:
             print(f"Data extraction for {log_info['run_id']} failed")
 
     if not training_data.empty:
-        final_data = training_data.pivot(index=['RunID', 'Step'], columns='ColumnName', values='MetricValue')
-        final_data = final_data.reset_index()
-        final_data.to_csv(OUTPUT_FILENAME, index=False)
+        training_data.to_csv(OUTPUT_FILENAME, index=False)
         print(f"\n Extraction Complete")
-        print(f"Total metrics extracted: {len(final_data)}")
+        print(f"Total metrics extracted: {len(training_data)}")
         print(f"Output saved to: {OUTPUT_FILENAME}")
     else:
         print("\n Extraction Failed ")
-        print("No data was successfully read from any log file.")
