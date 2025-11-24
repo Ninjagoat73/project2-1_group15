@@ -19,63 +19,67 @@ header = [
 
 
 
-def summarize( target_run_id: str, training_data: DataFrame, summary_data: DataFrame):
+def summarize( training_data: DataFrame, summary_data: DataFrame):
 
 
 
     try:
         success = True
 
-        df_full = training_data
-        df = df_full[training_data["RunID"] == target_run_id].reset_index(drop=True)
+        training_run_ids = training_data["RunID"].unique()
+        summary_run_ids = summary_data["RunID"].unique()
 
-        if df.empty:
-            print(f"{target_run_id} was not found. Please have training data ready.")
+        if training_data.empty:
+            print(f"No training data. Please have training data ready.")
             sys.exit(0)
 
-        if target_run_id in summary_data["RunID"].values:
-            print(f"{target_run_id} was found in summary data. Exiting.")
-            sys.exit(0)
+        for target_run_id in training_run_ids:
 
-        result = {
-            "RunID": target_run_id,
+            if target_run_id in summary_run_ids:
+                print(f"{target_run_id} already exists. Skipping.")
+                continue
 
-            "final_reward": df["cumulative_reward"].iloc[-1],
-            "max_reward": df["cumulative_reward"].max(),
+            df = training_data[training_data["RunID"] == target_run_id].reset_index(drop=True)
 
-            "time_to_max_reward_sec": df["time_elapsed(s)"].iloc[df["cumulative_reward"].idxmax()],
-            "total_duration_sec": df["time_elapsed(s)"].max(),
+            result = {
+                "RunID": target_run_id,
 
-            "mean_policy_loss": df["policy_loss"].mean() ,
-            "mean_value_loss": df["loss_value"].mean(),
-            "mean_entropy": df["entropy"].mean() ,
-            "final_entropy": df["entropy"].iloc[-1] ,
+                "final_reward": df["cumulative_reward"].iloc[-1],
+                "max_reward": df["cumulative_reward"].max(),
 
-            "max_cpu_usage_percent": df["cpu_usage_percent"].max(),
-            "mean_cpu_usage_percent": df["cpu_usage_percent"].mean(),
+                "time_to_max_reward_sec": df["time_elapsed(s)"].iloc[df["cumulative_reward"].idxmax()],
+                "total_duration_sec": df["time_elapsed(s)"].max(),
 
-            "max_ram_used_mb": df["ram_usage_mb"].max(),
-            "mean_ram_used_mb": df["ram_usage_mb"].mean(),
+                "mean_policy_loss": df["policy_loss"].mean() ,
+                "mean_value_loss": df["loss_value"].mean(),
+                "mean_entropy": df["entropy"].mean() ,
+                "final_entropy": df["entropy"].iloc[-1] ,
 
-            "max_cpu_frequency": df["cpu_frequency_mhz"].max(),
-            "mean_cpu_frequency": df["cpu_frequency_mhz"].mean(),
+                "max_cpu_usage_percent": df["cpu_usage_percent"].max(),
+                "mean_cpu_usage_percent": df["cpu_usage_percent"].mean(),
 
-            "max_gpu_usage_percent": df["gpu_usage_percent"].max(),
-            "mean_gpu_usage_percent": df["gpu_usage_percent"].mean() ,
+                "max_ram_used_mb": df["ram_usage_mb"].max(),
+                "mean_ram_used_mb": df["ram_usage_mb"].mean(),
 
-            "max_vram_used_mb": df["vram_usage_mb"].max(),
-            "mean_vram_used_mb": df["vram_usage_mb"].mean(),
+                "max_cpu_frequency": df["cpu_frequency_mhz"].max(),
+                "mean_cpu_frequency": df["cpu_frequency_mhz"].mean(),
 
-            "mean_game_cpu_usage_percent": df["game_cpu_usage"].mean(),
-            "max_game_cpu_usage_percent": df["game_cpu_usage"].max(),
+                "max_gpu_usage_percent": df["gpu_usage_percent"].max(),
+                "mean_gpu_usage_percent": df["gpu_usage_percent"].mean() ,
 
-            "mean_game_memory_usage_mb": df["game_memory_usage(MB)"].mean(),
-            "max_game_memory_usage_mb": df["game_memory_usage(MB)"].max(),
-        }
+                "max_vram_used_mb": df["vram_usage_mb"].max(),
+                "mean_vram_used_mb": df["vram_usage_mb"].mean(),
+
+                "mean_game_cpu_usage_percent": df["game_cpu_usage"].mean(),
+                "max_game_cpu_usage_percent": df["game_cpu_usage"].max(),
+
+                "mean_game_memory_usage_mb": df["game_memory_usage(MB)"].mean(),
+                "max_game_memory_usage_mb": df["game_memory_usage(MB)"].max(),
+            }
 
 
-        new_df = pd.DataFrame([result])
-        summary_data = pd.concat([summary_data, new_df], ignore_index=True)
+            new_df = pd.DataFrame([result])
+            summary_data = pd.concat([summary_data, new_df], ignore_index=True)
 
         return success, summary_data
     except Exception as e:
@@ -86,12 +90,11 @@ def summarize( target_run_id: str, training_data: DataFrame, summary_data: DataF
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python summary_maker.py <path-to-results-folder> <run-id>")
+    if len(sys.argv) < 2:
+        print("Usage: python summary_maker.py <path-to-results-folder>")
         sys.exit(0)
 
     folder = sys.argv[1]
-    run_id = sys.argv[2]
     OUTPUT_FILENAME = 'summary.csv'
     INPUT_FILENAME = 'training.csv'
 
@@ -117,7 +120,7 @@ if __name__ == "__main__":
         print(f"{OUTPUT_FILEPATH} was not found. Creating new {OUTPUT_FILEPATH} file")
         summary_data = pd.DataFrame(columns=header)
 
-    success, summary_data = summarize(run_id, training_data ,summary_data)
+    success, summary_data = summarize(training_data ,summary_data)
 
 
 
