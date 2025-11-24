@@ -10,6 +10,8 @@ Project/ProjectSettings/BurstAotSettings_StandaloneOSX.json
 # Training environments
 /envs
 
+data-collection/executables
+
 # Environemnt logfile
 *Project.log
 
