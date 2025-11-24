@@ -1,4 +1,4 @@
-﻿import csv
+import csv
 import os
 import sys
 from pathlib import Path
@@ -16,12 +16,7 @@ header = [
     'max_game_cpu_usage_percent', 'mean_game_cpu_usage_percent', 'max_game_memory_usage_mb',  'mean_game_memory_usage_mb'
 ]
 
-
-
-
 def summarize( training_data: DataFrame, summary_data: DataFrame):
-
-
 
     try:
         success = True
@@ -88,44 +83,32 @@ def summarize( training_data: DataFrame, summary_data: DataFrame):
         sys.exit(0)
 
 
-
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python summary_maker.py <path-to-results-folder>")
+        print("Usage: python summary_maker.py <path-to-training.csv>")
         sys.exit(0)
 
-    folder = sys.argv[1]
+    training_csv = sys.argv[1]
     OUTPUT_FILENAME = 'summary.csv'
-    INPUT_FILENAME = 'training.csv'
 
-    OUTPUT_FILEPATH = folder + "/" + OUTPUT_FILENAME
-    INPUT_FILEPATH = folder + "/" + INPUT_FILENAME
-
-    if not os.path.isdir(folder):
-        print(f"\n Fatal Error: root '{folder}' does not exist.")
-        exit()
-
-    if os.path.isfile(INPUT_FILEPATH):
-        print(f"{INPUT_FILEPATH} file exists. Using data.")
-        training_data = pd.read_csv(INPUT_FILEPATH)
+    if os.path.isfile(training_csv):
+        print(f"{training_csv} file exists. Using data.")
+        training_data = pd.read_csv(training_csv)
     else:
-        print(f"{INPUT_FILEPATH} was not found. Please have training data ready.")
+        print(f"{training_csv} was not found. Please have training data ready.")
         sys.exit(0)
 
-
-    if os.path.isfile(OUTPUT_FILEPATH):
-        print(f"{OUTPUT_FILEPATH} file already exists. Appending data to it...")
-        summary_data = pd.read_csv(OUTPUT_FILEPATH)
+    if os.path.isfile(OUTPUT_FILENAME):
+        print(f"{OUTPUT_FILENAME} file already exists. Appending data to it...")
+        summary_data = pd.read_csv(OUTPUT_FILENAME)
     else:
-        print(f"{OUTPUT_FILEPATH} was not found. Creating new {OUTPUT_FILEPATH} file")
+        print(f"{OUTPUT_FILENAME} was not found. Creating new {OUTPUT_FILENAME} file")
         summary_data = pd.DataFrame(columns=header)
 
     success, summary_data = summarize(training_data ,summary_data)
 
-
-
     if success:
-        summary_data.to_csv(OUTPUT_FILEPATH, index=False)
+        summary_data.to_csv(OUTPUT_FILENAME, index=False)
     else:
         print("Error occurred while summarizing data")
 
