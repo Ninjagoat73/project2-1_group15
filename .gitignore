@@ -7,6 +7,10 @@
 /Builds
 # csv data
 *.csv
+
+# Generated analysis files (images...)
+data-analysis/*.png
+data-analysis/analysis_summary.txt
 # Training environments
 /envs
 
