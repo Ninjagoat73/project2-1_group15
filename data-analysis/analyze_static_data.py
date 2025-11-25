@@ -1,5 +1,5 @@
 """
-Basic analysis script for static.csv data.
+Analysis script for static.csv data.
 Generates charts showing hardware and hyperparameter distributions.
 """
 
@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 try:
     data = pd.read_csv("../data-collection/static.csv")
 except FileNotFoundError:
-    print("Error: static.csv not found in data-collection/")
+    print("static.csv not found in data-collection")
     print("Run training_script.py first to generate data.")
     exit()
 
@@ -113,7 +113,7 @@ if 'learning_rate' in data.columns:
 
 # Save summary
 with open('analysis_summary.txt', 'w') as f:
-    f.write("STATIC DATA ANALYSIS SUMMARY\n")
+    f.write("static data analysis summary\n")
     f.write("="*60 + "\n\n")
     f.write(f"Total training runs: {len(data)}\n\n")
 
