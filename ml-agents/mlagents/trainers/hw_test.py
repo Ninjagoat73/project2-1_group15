@@ -39,7 +39,6 @@ def get_hardware_stats(interval_seconds : float = 0.1 ) -> dict:
          stats['gpu_usage_percent'] = -1
          stats['vram_usage_mb'] = -1
 
-   # print(stats)
     return stats
 
 if __name__ == '__main__':

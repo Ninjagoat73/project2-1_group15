@@ -161,7 +161,7 @@ def make_ppo_config(max_steps: int,
         "keep_checkpoints": kwargs.get('keep_checkpoints', 5),
         "max_steps": max_steps,
         "time_horizon": time_horizon,
-        "summary_freq": kwargs.get('summary_freq', random.choice([10000, 25000, 50000])),
+        "summary_freq": 12000,
     }
 
     return config
@@ -351,7 +351,6 @@ def generate_batch(algorithms: List[str] = ['ppo','sac'],
         List of (success, path_or_error) tuples
     """
     results = []
-    behaviours = ['3DBall'] # TEMPORARY
     for algo in algorithms:
         for behaviour in behaviours:
             for i in range(count_per_algorithm):
