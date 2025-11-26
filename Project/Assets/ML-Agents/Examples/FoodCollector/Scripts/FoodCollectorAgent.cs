@@ -189,7 +189,7 @@ public class FoodCollectorAgent : Agent
     {
         base.CheckAndLogFirstPart();
         MoveAgent(actionBuffers);
-        base.ManageStepCount();
+        // base.ManageStepCount();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

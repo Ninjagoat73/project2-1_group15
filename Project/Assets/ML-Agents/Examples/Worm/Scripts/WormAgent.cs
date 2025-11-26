@@ -43,6 +43,7 @@ public class WormAgent : Agent
         m_JdController.SetupBodyPart(bodySegment1);
         m_JdController.SetupBodyPart(bodySegment2);
         m_JdController.SetupBodyPart(bodySegment3);
+        base.InitializeLoggingVariables();
     }
 
 
@@ -70,6 +71,7 @@ public class WormAgent : Agent
         bodySegment0.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
 
         UpdateOrientationObjects();
+        base.LogEpisodeTime();
     }
 
     /// <summary>
@@ -135,6 +137,7 @@ public class WormAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        base.CheckAndLogFirstPart();
         // The dictionary with all the body parts in it are in the jdController
         var bpDict = m_JdController.bodyPartsDict;
 

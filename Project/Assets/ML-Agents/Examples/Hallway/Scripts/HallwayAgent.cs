@@ -27,6 +27,7 @@ public class HallwayAgent : Agent
         m_GroundRenderer = ground.GetComponent<Renderer>();
         m_GroundMaterial = m_GroundRenderer.material;
         m_statsRecorder = Academy.Instance.StatsRecorder;
+        base.InitializeLoggingVariables();
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -72,8 +73,10 @@ public class HallwayAgent : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
+        base.CheckAndLogFirstPart();
         AddReward(-1f / MaxStep);
         MoveAgent(actionBuffers.DiscreteActions);
+        // base.ManageStepCount();
     }
 
     void OnCollisionEnter(Collision col)
@@ -161,5 +164,6 @@ public class HallwayAgent : Agent
         }
         m_statsRecorder.Add("Goal/Correct", 0, StatAggregationMethod.Sum);
         m_statsRecorder.Add("Goal/Wrong", 0, StatAggregationMethod.Sum);
+        base.LogEpisodeTime();
     }
 }

@@ -66,7 +66,7 @@ public class Ball3DAgent : Agent
             SetReward(0.1f);
         }
         // Add next line
-        base.ManageStepCount();
+        // base.ManageStepCount();
     }
 
     public override void OnEpisodeBegin()
