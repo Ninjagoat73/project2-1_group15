@@ -76,7 +76,7 @@ public class HallwayAgent : Agent
         base.CheckAndLogFirstPart();
         AddReward(-1f / MaxStep);
         MoveAgent(actionBuffers.DiscreteActions);
-        base.ManageStepCount();
+        // base.ManageStepCount();
     }
 
     void OnCollisionEnter(Collision col)

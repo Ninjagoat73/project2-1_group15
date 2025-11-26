@@ -202,7 +202,7 @@ public class WalkerAgent : Agent
         bpDict[forearmL].SetJointStrength(continuousActions[++i]);
         bpDict[armR].SetJointStrength(continuousActions[++i]);
         bpDict[forearmR].SetJointStrength(continuousActions[++i]);
-        base.ManageStepCount();
+        // base.ManageStepCount();
     }
 
     //Update OrientationCube and DirectionIndicator

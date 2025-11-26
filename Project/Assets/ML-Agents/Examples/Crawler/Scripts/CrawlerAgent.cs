@@ -198,7 +198,7 @@ public class CrawlerAgent : Agent
         bpDict[leg1Lower].SetJointStrength(continuousActions[++i]);
         bpDict[leg2Lower].SetJointStrength(continuousActions[++i]);
         bpDict[leg3Lower].SetJointStrength(continuousActions[++i]);
-        base.ManageStepCount();
+        // base.ManageStepCount();
     }
 
     void FixedUpdate()

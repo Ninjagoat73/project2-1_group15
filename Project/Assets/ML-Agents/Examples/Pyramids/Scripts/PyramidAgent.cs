@@ -63,7 +63,7 @@ public class PyramidAgent : Agent
         base.CheckAndLogFirstPart();
         AddReward(-1f / MaxStep);
         MoveAgent(actionBuffers.DiscreteActions);
-        base.ManageStepCount();
+        // base.ManageStepCount();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

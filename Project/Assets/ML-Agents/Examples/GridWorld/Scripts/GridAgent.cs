@@ -165,7 +165,7 @@ public class GridAgent : Agent
                 EndEpisode();
             }
         }
-        base.ManageStepCount();
+        // base.ManageStepCount();
     }
 
     private void ProvideReward(GridGoal hitObject)

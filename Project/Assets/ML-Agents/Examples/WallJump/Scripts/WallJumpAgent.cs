@@ -262,7 +262,7 @@ public class WallJumpAgent : Agent
             StartCoroutine(
                 GoalScoredSwapGroundMaterial(m_WallJumpSettings.failMaterial, .5f));
         }
-        base.ManageStepCount();
+        // base.ManageStepCount();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
