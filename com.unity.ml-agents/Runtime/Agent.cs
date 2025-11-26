@@ -1448,6 +1448,7 @@ namespace Unity.MLAgents
                 logger.LogPerformanceData();
                 logger.LogTimeElapsed();
             }
+            ManageStepCount();
         }
 
         public void LogEpisodeTime()
@@ -1459,6 +1460,11 @@ namespace Unity.MLAgents
         {
             stepCount++;
             if (stepCount >= frequency) stepCount = 0;
+        }
+
+        public PerformanceLogger Logger
+        {
+            get { return logger; }
         }
     }
 }

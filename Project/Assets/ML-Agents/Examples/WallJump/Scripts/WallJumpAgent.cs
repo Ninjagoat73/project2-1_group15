@@ -78,6 +78,7 @@ public class WallJumpAgent : Agent
             bigWallBrain = modelOverrider.GetModelForBehaviorName(m_BigWallBehaviorName);
             m_BigWallBehaviorName = ModelOverrider.GetOverrideBehaviorName(m_BigWallBehaviorName);
         }
+        base.InitializeLoggingVariables();
     }
 
     // Begin the jump sequence
@@ -250,6 +251,7 @@ public class WallJumpAgent : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
+        base.CheckAndLogFirstPart();
         MoveAgent(actionBuffers.DiscreteActions);
         if ((!Physics.Raycast(m_AgentRb.position, Vector3.down, 20))
             || (!Physics.Raycast(m_ShortBlockRb.position, Vector3.down, 20)))
@@ -260,6 +262,7 @@ public class WallJumpAgent : Agent
             StartCoroutine(
                 GoalScoredSwapGroundMaterial(m_WallJumpSettings.failMaterial, .5f));
         }
+        base.ManageStepCount();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -311,6 +314,7 @@ public class WallJumpAgent : Agent
             18 * (Random.value - 0.5f), 1, -12);
         m_Configuration = Random.Range(0, 5);
         m_AgentRb.velocity = default(Vector3);
+        base.LogEpisodeTime();
     }
 
     void FixedUpdate()
