@@ -26,7 +26,7 @@ if len(sys.argv) < 2:
     sys.exit(0)
 
 games = ['3DBall','3DBallHard', 'Crawler','GridFoodCollector','GridWorld','Hallway','PushBlock','Pyramids','Sorter','Walker','Worm']
-yamls = yaml_generator.generate_batch(count_per_algorithm=1, behaviours=games)
+yamls = yaml_generator.generate_batch(count_per_algorithm=10, behaviours=games)
 executable_folder_path = sys.argv[1]
 os_name = platform.system()
 
