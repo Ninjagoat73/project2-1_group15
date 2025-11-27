@@ -14,7 +14,7 @@ def run_training(yaml_path: str, run_id: str, executable_path: str):
         yaml_path,
         "--env=" + executable_path,
         "--run-id=" + run_id,
-#        "--no-graphics"
+        "--no-graphics"
     ])
     if result.returncode != 0:
         print("Training failed. No entry will be added to static.csv")
@@ -25,7 +25,8 @@ if len(sys.argv) < 2:
     print("Usage: python3 training_scipt.py <path-to-executable-folder>")
     sys.exit(0)
 
-yamls = yaml_generator.generate_batch(count_per_algorithm=125)
+games = ['3DBall','3DBallHard', 'Crawler','GridFoodCollector','GridWorld','Hallway','PushBlock','Pyramids','Sorter','Walker','Worm']
+yamls = yaml_generator.generate_batch(count_per_algorithm=1, behaviours=games)
 executable_folder_path = sys.argv[1]
 os_name = platform.system()
 
