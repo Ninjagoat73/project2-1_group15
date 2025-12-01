@@ -38,6 +38,10 @@ data-analysis/analysis_summary.txt
 *.svd
 *.pdb
 
+#datacollection output
+data-collection/results/
+data-collection/generated/
+
 # Unity3D generated meta files
 *.pidb.meta
 
