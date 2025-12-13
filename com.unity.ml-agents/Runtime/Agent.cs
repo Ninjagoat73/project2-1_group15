@@ -1442,12 +1442,15 @@ namespace Unity.MLAgents
 
         public void CheckAndLogFirstPart()
         {
+            if (stepCount > frequency) stepCount = 0;
             if (stepCount == 0)
             {
                 logger.LogStepTimeAndStepPerSecond();
                 logger.LogPerformanceData();
                 logger.LogTimeElapsed();
             }
+            stepCount++;
+            // ManageStepCount();
         }
 
         public void LogEpisodeTime()
@@ -1455,10 +1458,15 @@ namespace Unity.MLAgents
             logger.LogEpisodeTime();
         }
 
-        public void ManageStepCount()
+        // private void ManageStepCount()
+        // {
+        //     stepCount++;
+        //     if (stepCount > frequency) stepCount = 0;
+        // }
+
+        public PerformanceLogger Logger
         {
-            stepCount++;
-            if (stepCount >= frequency) stepCount = 0;
+            get { return logger; }
         }
     }
 }

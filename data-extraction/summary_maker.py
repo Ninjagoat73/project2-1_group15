@@ -3,6 +3,7 @@ import os
 import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 from pandas import DataFrame
 
@@ -85,15 +86,18 @@ def summarize( training_data: DataFrame, summary_data: DataFrame):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python summary_maker.py <path-to-training.csv>")
+        print("Usage: python summary_maker.py <path-to-results>")
         sys.exit(0)
 
-    training_csv = sys.argv[1]
-    OUTPUT_FILENAME = 'summary.csv'
+
+    results_folder = sys.argv[1]
+    training_csv = Path(results_folder) / "training.csv"
+    OUTPUT_FILENAME = Path(results_folder) / "summary.csv"
 
     if os.path.isfile(training_csv):
         print(f"{training_csv} file exists. Using data.")
-        training_data = pd.read_csv(training_csv)
+        training_data = pd.read_csv(training_csv, low_memory=True)
+        training_data.replace(to_replace='', value=np.nan, inplace=True)
     else:
         print(f"{training_csv} was not found. Please have training data ready.")
         sys.exit(0)

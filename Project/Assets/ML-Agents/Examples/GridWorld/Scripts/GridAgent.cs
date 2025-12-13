@@ -72,6 +72,7 @@ public class GridAgent : Agent
     {
         m_GoalSensor = this.GetComponent<VectorSensorComponent>();
         m_ResetParams = Academy.Instance.EnvironmentParameters;
+        base.InitializeLoggingVariables();
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -121,6 +122,7 @@ public class GridAgent : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
+        base.CheckAndLogFirstPart();
         AddReward(-0.01f);
         var action = actionBuffers.DiscreteActions[0];
 
@@ -163,6 +165,7 @@ public class GridAgent : Agent
                 EndEpisode();
             }
         }
+        // base.ManageStepCount();
     }
 
     private void ProvideReward(GridGoal hitObject)
@@ -212,6 +215,7 @@ public class GridAgent : Agent
         {
             CurrentGoal = GridGoal.GreenPlus;
         }
+        base.LogEpisodeTime();
     }
 
     public void FixedUpdate()

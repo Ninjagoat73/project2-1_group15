@@ -42,6 +42,7 @@ public class SorterAgent : Agent
         m_BufferSensor = GetComponent<BufferSensorComponent>();
         m_AgentRb = GetComponent<Rigidbody>();
         m_StartingPos = transform.position;
+        base.InitializeLoggingVariables();
     }
 
     public override void OnEpisodeBegin()
@@ -55,6 +56,7 @@ public class SorterAgent : Agent
         transform.position = m_StartingPos;
         m_AgentRb.velocity = Vector3.zero;
         m_AgentRb.angularVelocity = Vector3.zero;
+        base.LogEpisodeTime();
     }
 
 
@@ -228,11 +230,13 @@ public class SorterAgent : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
+        base.CheckAndLogFirstPart();
         // Move the agent using the action.
         MoveAgent(actionBuffers.DiscreteActions);
 
         // Penalty given each step to encourage agent to finish task quickly.
         AddReward(-1f / MaxStep);
+        // base.ManageStepCount();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

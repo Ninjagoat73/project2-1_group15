@@ -7,6 +7,10 @@ Project/ProjectSettings/BurstAotSettings_StandaloneOSX.json
 /results
 # Output Builds
 /Builds
+
+# Generated analysis files (images...)
+data-analysis/*.png
+data-analysis/analysis_summary.txt
 # Training environments
 /envs
 

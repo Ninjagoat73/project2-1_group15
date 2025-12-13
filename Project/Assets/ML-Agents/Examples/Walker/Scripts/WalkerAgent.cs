@@ -84,6 +84,7 @@ public class WalkerAgent : Agent
         m_JdController.SetupBodyPart(handR);
 
         m_ResetParams = Academy.Instance.EnvironmentParameters;
+        base.InitializeLoggingVariables();
     }
 
     /// <summary>
@@ -105,6 +106,7 @@ public class WalkerAgent : Agent
         //Set our goal walking speed
         MTargetWalkingSpeed =
             randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : MTargetWalkingSpeed;
+        base.LogEpisodeTime();
     }
 
     /// <summary>
@@ -165,6 +167,7 @@ public class WalkerAgent : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
+        base.CheckAndLogFirstPart();
         var bpDict = m_JdController.bodyPartsDict;
         var i = -1;
 
@@ -199,6 +202,7 @@ public class WalkerAgent : Agent
         bpDict[forearmL].SetJointStrength(continuousActions[++i]);
         bpDict[armR].SetJointStrength(continuousActions[++i]);
         bpDict[forearmR].SetJointStrength(continuousActions[++i]);
+        // base.ManageStepCount();
     }
 
     //Update OrientationCube and DirectionIndicator

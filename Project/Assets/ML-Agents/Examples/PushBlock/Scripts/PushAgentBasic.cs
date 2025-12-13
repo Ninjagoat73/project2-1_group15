@@ -175,7 +175,7 @@ public class PushAgentBasic : Agent
 
         // Penalty given each step to encourage agent to finish task quickly.
         AddReward(-1f / MaxStep);
-        base.ManageStepCount();
+        // base.ManageStepCount();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

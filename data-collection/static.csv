@@ -793,3 +793,29 @@ run_id,os,cpu,physical_cores,system_ram_gb,gpu,GPU_ram_mb,cuda_version,training_
 20251203-041621,Windows 11,AMD Ryzen 7 5700X 8-Core Processor,8,34265653248,NVIDIA GeForce RTX 5080,16303.0,,sac,3DBall,256,6.1e-05,100000,,,,,constant,False,512,3,simple,,,5,250000,128,25000
 20251203-050104,Windows 11,AMD Ryzen 7 5700X 8-Core Processor,8,34265653248,NVIDIA GeForce RTX 5080,16303.0,,sac,3DBall,1024,5.9e-05,500000,,,,,constant,False,128,3,simple,,,5,2000000,64,50000
 20251203-202818,Windows 11,AMD Ryzen 7 5700X 8-Core Processor,8,34265653248,NVIDIA GeForce RTX 5080,16303.0,,sac,3DBall,256,0.000194,200000,,,,,constant,True,32,2,simple,,,5,500000,256,50000
+20251125-155424,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,2048,0.000102,81920,0.005654,0.19,0.924,4,linear,False,256,3,simple,,,5,1000000,64,12000
+20251125-161808,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,4096,4.2e-05,81920,0.003347,0.247,0.926,4,constant,True,128,2,simple,,,5,250000,2048,12000
+20251125-162650,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,1024,5e-05,40960,0.003972,0.293,0.925,8,linear,True,256,1,simple,,,5,250000,1024,12000
+20251125-163243,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,2048,0.000293,81920,0.001403,0.243,0.93,4,constant,False,512,1,simple,,,5,250000,1024,12000
+20251125-163807,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,512,0.00018,40960,0.007519,0.187,0.924,3,constant,False,256,1,simple,,,5,2000000,512,12000
+20251125-171940,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,1024,0.000242,81920,0.009234,0.189,0.941,5,linear,False,256,3,simple,,,5,2000000,256,12000
+20251125-180906,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,4096,0.000208,163840,0.000252,0.287,0.924,4,linear,True,256,2,simple,,,5,250000,64,12000
+20251125-181514,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,1024,0.000278,20480,0.006859,0.186,0.932,10,linear,False,64,2,simple,,,5,500000,64,12000
+20251125-182736,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,2048,0.00026,81920,0.009101,0.193,0.922,3,linear,True,64,1,simple,,,5,2000000,512,12000
+20251125-191135,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,1024,0.00022,81920,0.009322,0.157,0.915,10,linear,False,32,3,simple,,,5,250000,1024,12000
+20251125-191758,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,512,0.000283,40960,0.005018,0.128,0.935,10,constant,False,256,2,simple,,,5,2000000,256,12000
+20251125-200635,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,512,0.000123,20480,0.006019,0.296,0.932,10,constant,False,128,1,simple,,,5,1000000,2048,12000
+20251125-202945,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,4096,0.000292,81920,0.007736,0.29,0.937,3,linear,True,64,2,simple,,,5,500000,512,12000
+20251125-204057,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,4096,0.000254,81920,0.000539,0.171,0.914,4,constant,True,256,1,simple,,,5,2000000,2048,12000
+20251125-212621,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,1024,2.2e-05,40960,0.009789,0.226,0.946,10,constant,True,512,3,simple,,,5,250000,2048,12000
+20251125-213347,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,512,8.9e-05,20480,0.002071,0.145,0.933,10,linear,True,256,3,simple,,,5,2000000,2048,12000
+20251125-222515,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,4096,0.000143,163840,0.001821,0.175,0.901,5,linear,True,128,2,simple,,,5,500000,1024,12000
+20251125-223725,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,512,8.6e-05,40960,0.00344,0.3,0.929,4,constant,False,512,1,simple,,,5,2000000,128,12000
+20251125-232316,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,512,7.2e-05,40960,0.001114,0.293,0.906,4,constant,False,64,3,simple,,,5,250000,2048,12000
+20251125-232910,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,4096,0.000195,163840,0.001785,0.237,0.943,4,constant,False,32,2,simple,,,5,250000,64,12000
+20251125-233508,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,2048,9.4e-05,81920,0.005132,0.225,0.939,4,linear,True,32,2,simple,,,5,250000,512,12000
+20251125-234111,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,512,0.000189,40960,0.005634,0.108,0.931,3,constant,False,256,1,simple,,,5,500000,512,12000
+20251126-063500,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,1024,0.000264,81920,0.009584,0.118,0.902,10,constant,False,256,2,simple,,,5,100000,1024,12000
+20251126-074438,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,2048,0.000204,163840,0.001317,0.103,0.903,4,constant,False,64,2,simple,,,5,500000,1024,12000
+20251126-112043,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,2048,4.6e-05,163840,0.003656,0.243,0.95,4,constant,False,512,3,simple,,,5,250000,64,12000
+20251126-112820,macOS,Apple M2,8,8589934592,Chipset Model: Apple M2,,,ppo,Crawler,4096,5e-05,163840,0.009116,0.212,0.911,5,linear,False,128,3,simple,,,5,500000,128,12000
