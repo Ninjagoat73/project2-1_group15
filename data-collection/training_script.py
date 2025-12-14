@@ -25,8 +25,9 @@ if len(sys.argv) < 2:
     print("Usage: python3 training_scipt.py <path-to-executable-folder>")
     sys.exit(0)
 
-games = ['3DBall','3DBallHard', 'Crawler','GridFoodCollector','GridWorld','Hallway','PushBlock','Pyramids','Sorter','Walker','Worm']
-yamls = yaml_generator.generate_batch(count_per_algorithm=10, behaviours=games)
+games = ['3DBall','3DBallHard', 'Crawler','GridFoodCollector','Hallway','PushBlock','Pyramids','Sorter','Walker','Worm']
+# games = ['3DBall','3DBallHard', 'Crawler','GridFoodCollector','GridWorld','Hallway','PushBlock','Pyramids','Sorter','Walker','Worm']
+yamls = yaml_generator.generate_batch(count_per_algorithm=5, behaviours=games)
 executable_folder_path = sys.argv[1]
 os_name = platform.system()
 
