@@ -1,0 +1,78 @@
+@startuml
+
+actor "Group Member" as GROUP_MEMBER
+
+rectangle "Unity Project" {
+  component "Learning Environment" as ENV
+  file "StatsRecorder.cs" as STATS
+  file "PerformanceLogger.cs" as PERFORMANCELOGGER
+  file "Agent.cs" as AGENT
+  file "3DBallAgent.cs" as 3DBALL
+  file "..." as DOTDOTDOT
+  file "WormAgent.cs" as WORM
+}
+
+rectangle "Training" {
+  process "mlagents-learn" as TRAIN
+  file "trainer_controller.py" as TRAINERCONTROLLER
+  file "training_script.py" as TRAININGSCRIPT
+  file "yaml_generator.py" as YAMLGENERATOR
+  file "data_exporter.py" as DATAEXPORTER
+  component "static.csv" as STATIC
+  database RESULTS [
+  results
+  ---
+  run_id_1_agent_x
+  run_id_2_agent_x
+  run_id_1_agent_y
+  run_id_1_agent_z
+  run_id_2_agent_z
+  run_id_3_agent_z
+        ...
+  ]
+}
+
+rectangle "Data Processing" {
+  component "extract_mlagents_data.py" as COLLECTOR
+  component "training.csv" as CSV
+}
+
+rectangle "Analysis" {
+  component "ml_analysis.py" as ANALYZER
+  package "ML Algorithms" as ML_ALGO
+}
+
+rectangle "Visualization" {
+  component "Jupyter Notebook" as NOTEBOOK
+  artifact "Plots and Results" as PLOTS
+}
+
+3DBALL --> ENV: logs custom data to TensorBoard
+DOTDOTDOT --> ENV: .
+WORM --> ENV: .
+AGENT --> 3DBALL: inherits
+AGENT --> DOTDOTDOT: inherits
+AGENT --> WORM: inherits
+STATS --> PERFORMANCELOGGER: inherits. logs data to tensorboard
+PERFORMANCELOGGER --> AGENT: inherits
+TRAINERCONTROLLER --> TRAIN: Logs hardware data
+RESULTS <-- ENV: data saved to results folder
+ENV <--> TRAIN : mlagents interacts with Unity
+TRAININGSCRIPT --> RESULTS : data logged and saved to TensorBoard
+COLLECTOR --> RESULTS : reads from
+COLLECTOR --> CSV : translates data to csv format
+TRAIN --> TRAININGSCRIPT
+YAMLGENERATOR --> TRAININGSCRIPT
+DATAEXPORTER <--> TRAININGSCRIPT
+STATIC <-- DATAEXPORTER: appends entries to csv file
+
+ANALYZER --> CSV : reads from
+ANALYZER --> STATIC : reads from
+ANALYZER --> ML_ALGO : uses
+ML_ALGO --> NOTEBOOK : exports results
+NOTEBOOK --> PLOTS : creates
+GROUP_MEMBER --> PLOTS: interprets results
+
+
+@enduml
+
