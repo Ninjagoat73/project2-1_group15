@@ -54,6 +54,7 @@ def get_log_directories(folder):
         if event_files:
             log_dir = os.path.dirname(event_files[0])
             relative_log_dir = os.path.relpath(log_dir, folder).replace(os.sep, '/')
+            relative_log_dir = relative_log_dir.split('/')[0]
             log_dirs.append({
                 'log_dir': log_dir,
                 'run_id': relative_log_dir
