@@ -23,11 +23,13 @@ def summarize( training_data: DataFrame, summary_data: DataFrame):
         success = True
 
         training_run_ids = training_data["RunID"].unique()
+        print(training_run_ids.size)
         summary_run_ids = summary_data["RunID"].unique()
 
         if training_data.empty:
             print(f"No training data. Please have training data ready.")
             sys.exit(0)
+
 
         for target_run_id in training_run_ids:
 
@@ -37,13 +39,18 @@ def summarize( training_data: DataFrame, summary_data: DataFrame):
 
             df = training_data[training_data["RunID"] == target_run_id].reset_index(drop=True)
 
+
+            if df.empty:
+                print(f"Warning: {target_run_id} has no rows in training_data. Skipping.")
+                continue
+
             result = {
                 "RunID": target_run_id,
 
                 "final_reward": df["cumulative_reward"].iloc[-1],
                 "max_reward": df["cumulative_reward"].max(),
 
-                "time_to_max_reward_sec": df["time_elapsed(s)"].iloc[df["cumulative_reward"].idxmax()],
+                "time_to_max_reward_sec": df.loc[df["cumulative_reward"].idxmax(), "time_elapsed(s)"] if not df["cumulative_reward"].isnull().all() else 0,
                 "total_duration_sec": df["time_elapsed(s)"].max(),
 
                 "mean_policy_loss": df["policy_loss"].mean() ,
