@@ -90,6 +90,62 @@ def summarize( training_data: DataFrame, summary_data: DataFrame):
         print(e)
         sys.exit(0)
 
+def summarize_single_run(target_id, training_csv, output_filename):
+
+
+    full_df = pd.read_csv(training_csv, low_memory=True)
+    df = full_df[full_df["RunID"] == target_id].reset_index(drop=True)
+
+
+    if df.empty:
+        print(f"Warning: No data found in training.csv for RunID: {target_id}")
+        return
+
+    target_run_id = df["RunID"].iloc[0]
+
+    result = {
+        "RunID": target_run_id,
+
+        "final_reward": df["cumulative_reward"].iloc[-1],
+        "max_reward": df["cumulative_reward"].max(),
+
+        "time_to_max_reward_sec": df.loc[df["cumulative_reward"].idxmax(), "time_elapsed(s)"] if not df[
+            "cumulative_reward"].isnull().all() else 0,
+        "total_duration_sec": df["time_elapsed(s)"].max(),
+
+        "mean_policy_loss": df["policy_loss"].mean(),
+        "mean_value_loss": df["loss_value"].mean(),
+        "mean_entropy": df["entropy"].mean(),
+        "final_entropy": df["entropy"].iloc[-1],
+
+        "max_cpu_usage_percent": df["cpu_usage_percent"].max(),
+        "mean_cpu_usage_percent": df["cpu_usage_percent"].mean(),
+
+        "max_ram_used_mb": df["ram_usage_mb"].max(),
+        "mean_ram_used_mb": df["ram_usage_mb"].mean(),
+
+        "max_cpu_frequency": df["cpu_frequency_mhz"].max(),
+        "mean_cpu_frequency": df["cpu_frequency_mhz"].mean(),
+
+        "max_gpu_usage_percent": df["gpu_usage_percent"].max(),
+        "mean_gpu_usage_percent": df["gpu_usage_percent"].mean(),
+
+        "max_vram_used_mb": df["vram_usage_mb"].max(),
+        "mean_vram_used_mb": df["vram_usage_mb"].mean(),
+
+        "mean_game_cpu_usage_percent": df["game_cpu_usage"].mean(),
+        "max_game_cpu_usage_percent": df["game_cpu_usage"].max(),
+
+        "mean_game_memory_usage_mb": df["game_memory_usage(MB)"].mean(),
+        "max_game_memory_usage_mb": df["game_memory_usage(MB)"].max(),
+    }
+
+    new_df = pd.DataFrame([result])
+
+
+    file_exists = os.path.isfile(output_filename)
+    new_df.to_csv(output_filename, mode='a', index=False, header=not file_exists)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

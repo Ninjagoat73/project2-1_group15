@@ -2,10 +2,10 @@
 
 # 1. Load the Master List (static.csv)
 print("Loading master static data...")
-static_df = pd.read_csv('E:/project2-1/data-collection/results/static.csv')
+static_df = pd.read_csv('E:/project2-1/data-collection/data/static.csv')
 
 # Get a unique list of valid RunIDs (this is our 'Golden List')
-valid_run_ids = set(static_df['run_id'].unique())
+valid_run_ids = set(static_df['RunID'].unique())
 print(f"Found {len(valid_run_ids)} valid RunIDs in static.csv")
 
 
@@ -27,7 +27,7 @@ def clean_large_file(file_path, valid_ids):
 
 
 # 2. Clean Training and Summary files
-clean_large_file('E:/project2-1/data-collection/results/training.csv', valid_run_ids)
-clean_large_file('E:/project2-1/data-collection/results/summary.csv', valid_run_ids)
+clean_large_file('E:/project2-1/data-collection/data/training.csv', valid_run_ids)
+clean_large_file('E:/project2-1/data-collection/data/summary.csv', valid_run_ids)
 
 print("\nAll files are now synchronized with static.csv!")
