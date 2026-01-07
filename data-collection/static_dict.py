@@ -46,7 +46,7 @@ def create_static_dict(run_id: str, hardware_data: dict, yaml_data: dict):
         }
 
 header = [
-        'run_id', 'os', 'cpu', 'physical_cores', 'system_ram_gb',
+        'RunID', 'os', 'cpu', 'physical_cores', 'system_ram_gb',
         'gpu', 'GPU_ram_mb', 'cuda_version', 'training_type', 'game_name', 'batch_size',
         'learning_rate', 'buffer_size', 'beta', 'epsilon', 'lambd',
         'num_epoch', 'learning_rate_schedule', 'normalize', 'hidden_units',
