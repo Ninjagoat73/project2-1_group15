@@ -23,7 +23,7 @@ def sync_data():
         json_data = static_df.to_json(orient='records')
         data = json.loads(json_data)
 
-        supabase.table("static").upsert(data, on_conflict="RunID").execute()
+        supabase.table("static").upsert(data, on_conflict="RunID", ignore_duplicates = True).execute()
 
     if os.path.exists('training.csv'):
         print("Syncing Training...")
@@ -37,7 +37,7 @@ def sync_data():
         chunk_size = 2000
         for i in range(0, len(records), chunk_size):
             chunk = records[i: i + chunk_size]
-            supabase.table("training").upsert(chunk, on_conflict="RunID,Step").execute()
+            supabase.table("training").upsert(chunk, on_conflict="RunID,Step" , ignore_duplicates = True).execute()
             print(f"  Training: {i + len(chunk)} rows synced")
 
 
@@ -51,7 +51,7 @@ def sync_data():
 
         json_data = summary_df.to_json(orient='records')
         data = json.loads(json_data)
-        supabase.table("summary").upsert(data, on_conflict="RunID").execute()
+        supabase.table("summary").upsert(data, on_conflict="RunID" , ignore_duplicates = True).execute()
 
 
 if __name__ == "__main__":
