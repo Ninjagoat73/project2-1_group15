@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 # Load the data
 try:
-    data = pd.read_csv("../data-collection/static.csv")
+    data = pd.read_csv("../data-collection/data/static.csv")
 except FileNotFoundError:
     print("Error: static.csv not found in data-collection/")
     print("Run training_script.py first to generate data.")
