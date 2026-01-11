@@ -363,7 +363,8 @@ def generate_batch(algorithms: List[str] = ['ppo'],
                 results.append((success, path))
 
                 if success:
-                    print(f"Generated {algo.upper()} config {i+1}/{count_per_algorithm}: {path}")
+                    pass
+                    #print(f"Generated {algo.upper()} config {i+1}/{count_per_algorithm}: {path}")
                 else:
                     print(f"Failed to generate {algo.upper()} config {i+1}: {path}")
 
