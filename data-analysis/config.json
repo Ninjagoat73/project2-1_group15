@@ -1,0 +1,26 @@
+{
+    "data_file": "training_data_prepared.csv",
+    "output_plot": "time_prediction_results.png",
+    
+    "features": {
+        "hardware": ["physical_cores", "system_ram_gb"],
+        "hyperparameters": ["batch_size", "learning_rate", "max_steps", "buffer_size", "hidden_units", "num_layers", "time_horizon"]
+    },
+    
+    "target": "total_time_seconds",
+    
+    "train_test_split": {
+        "test_size": 0.2,
+        "random_state": 42
+    },
+    
+    "models": {
+        "linear_regression": true,
+        "random_forest": {
+            "enabled": true,
+            "n_estimators": 100,
+            "max_depth": 8,
+            "min_samples_leaf": 5
+        }
+    }
+}
