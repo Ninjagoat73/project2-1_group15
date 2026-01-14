@@ -36,7 +36,7 @@ optimal_settings = []
 
 merged_df['scaled_reward'] = merged_df.groupby('game_name')['final_reward'].transform(scale_group)
 
-X_global = merged_df[feature_cols]
+X_global = merged_df[feature_cols].copy()
 y_global = merged_df['scaled_reward'].fillna(0)
 
 
@@ -47,12 +47,13 @@ X_global['game_name'] = le_game.fit_transform(X_global['game_name'])
 le_sched = LabelEncoder()
 X_global['learning_rate_schedule'] = le_sched.fit_transform(X_global['learning_rate_schedule'])
 
-X_train, X_test, y_train, y_test = train_test_split(X_global, y_global, test_size=0.2, random_state=1)
-regr = RandomForestRegressor(n_estimators=100, max_depth=8, min_samples_leaf=5, random_state=1)
+X_train, X_test, y_train, y_test = train_test_split(X_global, y_global, test_size=0.2, random_state= 1 , stratify=merged_df['game_name'])
+regr = RandomForestRegressor(n_estimators=100, max_depth=7, min_samples_leaf=5)
 regr.fit(X_train, y_train)
 y_train_pred = regr.predict(X_train)
 global_train_r2 = r2_score(y_train, y_train_pred)
 print(f"Global Training R2: {global_train_r2:.2f}")
+game_counts = static_df["game_name"].value_counts()
 
 
 
@@ -100,7 +101,8 @@ for game in games:
     # r2_train = r2_score(y_train, regr.predict(X_train))
     r2 = r2_score(game_y_test, predictions)
     mae = mean_absolute_error(game_y_test, predictions)
-    mape = mean_absolute_percentage_error(game_y_test, predictions)
+
+
 
     r2_dict[game] = r2
     # r2_train_dict[game] = r2_train
@@ -109,7 +111,7 @@ for game in games:
     print(f"Prediction Accuracy (R2): {r2:.2f}")
     # print(f"Prediction Accuracy Training (R2 Training): {r2_train:.2f}")
     print(f"Average Error (MAE): {mae:.2f}")
-    print(f"Average Error Percentage (MAPE): {mape:.2f}%")
+    print(f"Game Counts: {game_counts[game]:.2f}")
 
 
     r2_dict.update({game: r2})
@@ -203,7 +205,7 @@ if optimal_settings:
     print(optimal_df.to_string(index=False))
 
 
-game_counts = static_df["game_name"].value_counts()
+
 
 plot_data = pd.DataFrame({
     'Game': games,
@@ -234,7 +236,7 @@ lines_1, labels_1 = ax1.get_legend_handles_labels()
 lines_2, labels_2 = ax2.get_legend_handles_labels()
 ax2.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right')
 
-plt.title('Dataset Size vs. Model Accuracy ($R^2$) per Game', fontsize=14)
+plt.title('Dataset Size vs. Model Accuracy per Game', fontsize=14)
 fig.tight_layout()
 
 plt.show()
