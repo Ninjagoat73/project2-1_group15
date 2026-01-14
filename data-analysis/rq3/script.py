@@ -1,7 +1,7 @@
 ﻿import pandas as pd
 
 
-data_path = "E:\project2-1\data-collection\data/"
+data_path = "E:/project2-1\data-collection\data/"
 
 
 static_df = pd.read_csv(data_path + 'static.csv')
@@ -14,7 +14,7 @@ merged_df = pd.merge(
     on='RunID'
 )
 
-pushblock_df = merged_df[merged_df['game_name'] == 'PushBlock'].copy()
+pushblock_df = merged_df[merged_df['game_name'] == 'Walker'].copy()
 pushblock_df = pushblock_df.sort_values(by='final_reward', ascending=False)
 
 run_reward_dict = {
