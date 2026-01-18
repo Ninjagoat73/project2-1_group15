@@ -37,6 +37,7 @@ target_encoders = {}
 for col in text_target_columns:
     le = LabelEncoder()
     df[col] = le.fit_transform(df[col].astype(str))
+    target_encoders[col] = le
 
 numeric_target_columns = ['batch_size', 'learning_rate_y', 'beta_y', 'epsilon_y', 'lambd', 'num_epoch', 'hidden_units', 'num_layers', 'keep_checkpoints', 'time_horizon' ,'summary_freq']
 
