@@ -1,4 +1,6 @@
 import os
+from pathlib import Path
+
 import pandas as pd
 from glob import glob
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
@@ -54,13 +56,15 @@ def get_log_directories(folder):
         if event_files:
             log_dir = os.path.dirname(event_files[0])
             relative_log_dir = os.path.relpath(log_dir, folder).replace(os.sep, '/')
+            relative_log_dir = relative_log_dir.split('/')[0]
             log_dirs.append({
                 'log_dir': log_dir,
                 'run_id': relative_log_dir
             })
-            print(f" Found logs for: {relative_log_dir}")
+            #print(f" Found logs for: {relative_log_dir}")
         else:
-            print(f" No event files found in run folder: {run_folder}")
+            #print(f" No event files found in run folder: {run_folder}")
+            pass
 
     return log_dirs
 
@@ -97,13 +101,37 @@ def extract_data_from_log(log_dir_info):
 
     return pd.DataFrame()
 
+
+def extract_single_run(folder, run_id, output_filename):
+
+    run_path = os.path.join(folder, run_id)
+
+    event_files = glob(os.path.join(run_path, '**', 'events.out.tfevents*'), recursive=True)
+    if not event_files:
+        return
+
+    log_dir = os.path.dirname(event_files[0])
+    data_frame_run = extract_data_from_log({'log_dir': log_dir, 'run_id': run_id})
+
+    if not data_frame_run.empty:
+        df_pivoted = data_frame_run.pivot(index=['RunID', 'Step'], columns='ColumnName',
+                                          values='MetricValue').reset_index()
+
+        file_exists = os.path.isfile(output_filename)
+        df_pivoted.to_csv(output_filename, mode='a', index=False, header=not file_exists)
+
+        return data_frame_run
+    return None
+
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python3 extract_mlagents_data.py <path-to-results-folder>")
         sys.exit(0)
 
     folder = sys.argv[1]
-    OUTPUT_FILENAME = 'training.csv'
+    OUTPUT_FILENAME = '../data-extraction/training.csv'
 
     if not os.path.isdir(folder):
         print(f"\n Fatal Error: root '{folder}' does not exist.")

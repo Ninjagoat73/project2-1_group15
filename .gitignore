@@ -1,3 +1,5 @@
+
+*.csv
 # files that change but I dont think pushing the changes are necessary (could break)
 Project/ProjectSettings/BurstAotSettings_StandaloneOSX.json
 # Output Artifacts (Legacy)
@@ -39,6 +41,10 @@ data-collection/executables
 *.booproj
 *.svd
 *.pdb
+
+#datacollection output
+data-collection/results/
+data-collection/generated/
 
 # Unity3D generated meta files
 *.pidb.meta
@@ -96,6 +102,9 @@ build/
 venv/
 .mypy_cache/
 
+# Environment variables (secrets)
+.env
+
 # Code coverage report
 .coverage
 coverage.xml
@@ -107,3 +116,15 @@ coverage.xml
 .yamato/unfolded/
 
 *.joblib
+# local training files
+data-collection/executables/
+data-collection/Foodcollector/
+data-collection/tempcrawler/
+data-collection/tempgridworld/
+data-collection/TempPucshblock/
+data-collection/tep3dcall/
+data-analysis/model_comparison.py
+data-analysis/results_summary.txt
+data-analysis/extract_training_times.py
+data-collection/rebuild_static_csv.py
+.env
