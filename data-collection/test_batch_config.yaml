@@ -1,0 +1,17 @@
+batch_config:
+  batch_size: 1
+  algorithms:
+    ppo: true
+    sac: false
+  games:
+    3DBall: true
+    3DBallHard: true 
+    Crawler: true
+    GridFoodCollector: true
+    GridWorld: true
+    Hallway: false
+    PushBlock: false
+    Pyramids: false
+    Sorter: false
+    Walker: false
+    Worm: false

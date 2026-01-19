@@ -1,4 +1,4 @@
-﻿import pandas as pd
+import pandas as pd
 
 
 file_path = 'E:/project2-1/data-collection/static.csv'
