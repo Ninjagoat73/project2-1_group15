@@ -1,4 +1,4 @@
-# Output Artifacts (Legacy)
+﻿# Output Artifacts (Legacy)
 /models
 /summaries
 # Output Artifacts
@@ -98,6 +98,9 @@ build/
 venv/
 .mypy_cache/
 
+# Environment variables (secrets)
+.env
+
 # Code coverage report
 .coverage
 coverage.xml
@@ -107,3 +110,15 @@ coverage.xml
 
 # yamato-parser temporary output files:
 .yamato/unfolded/
+
+# local training files
+data-collection/executables/
+data-collection/Foodcollector/
+data-collection/tempcrawler/
+data-collection/tempgridworld/
+data-collection/TempPucshblock/
+data-collection/tep3dcall/
+data-analysis/model_comparison.py
+data-analysis/results_summary.txt
+data-analysis/extract_training_times.py
+data-collection/rebuild_static_csv.py

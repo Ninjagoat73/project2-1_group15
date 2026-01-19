@@ -1,194 +1,275 @@
-# RQ1 time prediction
+"""
+RQ1: Can we predict training time based on hyperparameters and hardware?
+This script trains different ML models and compares their performance.
+"""
+
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
 import matplotlib.pyplot as plt
 import json
-import sys
 
-# config
-config_file = 'config.json'
-if len(sys.argv) > 1:
-    config_file = sys.argv[1]
-f = open(config_file)
+# load configuration from json file
+f = open('config.json')
 cfg = json.load(f)
 f.close()
 
-print("config:", config_file)
-
+# load the dataset
 df = pd.read_csv(cfg['data_file'])
 print("loaded", len(df), "samples")
 
-# games to numbers
-game_list = df['game_name'].unique()
-for g in game_list:
+# removing runs that took way too long or too short (bc they are probably failed runs)
+df = df[df['total_time_seconds'] < 15000]  # max 15000 seconds
+df = df[df['total_time_seconds'] > 20]     # min 20 seconds
+print("after removing outliers:", len(df))
+
+# convert game names each game gets its own column with 0 or 1
+games = df['game_name'].unique()
+for g in games:
     df['game_' + g] = 0
     df.loc[df['game_name'] == g, 'game_' + g] = 1
 
-# features
+#creating new features that might help prediction
+df['steps_per_batch'] = df['max_steps'] / df['batch_size']
+df['buffer_ratio'] = df['buffer_size'] / df['batch_size']
+df['network_size'] = df['hidden_units'] * df['num_layers']
+df['lr_steps'] = df['learning_rate'] * df['max_steps']
+df['batch_network'] = df['batch_size'] * df['network_size']
+df['complexity'] = df['max_steps'] * df['num_layers'] * df['hidden_units']
+# log transforming some features because they have large ranges
+df['log_max_steps'] = np.log1p(df['max_steps'])
+df['log_batch'] = np.log1p(df['batch_size'])
+df['log_buffer'] = np.log1p(df['buffer_size'])
+df['log_complexity'] = np.log1p(df['complexity'])
+# target variable (use log transform because training times vary alot)
+df['target'] = np.log1p(df['total_time_seconds'])
+# build feature list from config file
 feat = []
 for f in cfg['features']['hardware']:
     feat.append(f)
 for f in cfg['features']['hyperparameters']:
     feat.append(f)
+# add our engineered features
+feat.append('steps_per_batch')
+feat.append('buffer_ratio')
+feat.append('network_size')
+feat.append('lr_steps')
+feat.append('batch_network')
+feat.append('log_max_steps')
+feat.append('log_batch')
+feat.append('log_buffer')
+feat.append('log_complexity')
+# add game columns
 for c in df.columns:
     if c.startswith('game_'):
         feat.append(c)
-
-# get X and y
 X = df[feat]
-y = df[cfg['target']]
-
-# remove non numeric stuff
-cols_to_keep = []
+y = df['target']
+# filter to only numeric columns (some might be strings)
+cols = []
 for c in X.columns:
     if X[c].dtype in ['int64', 'float64']:
-        cols_to_keep.append(c)
-X = X[cols_to_keep]
-feat = cols_to_keep
+        cols.append(c)
+X = X[cols]
+# removing features with zero variance (bc they dont help prediction)
+for c in X.columns:
+    if X[c].var() == 0:
+        X = X.drop(columns=[c])
 
-# drop na
+# handle missing values
 X = X.dropna()
 y = y[X.index]
-
-print("using", len(X), "samples")
-print("features:", len(feat))
-
-# split data
-X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# comparing models
-print("\n=== Model Comparison ===")
-
-# linear
-lr = LinearRegression()
-lr.fit(X_tr, y_tr)
-pred_lr = lr.predict(X_te)
-r2_lr = r2_score(y_te, pred_lr)
-mae_lr = mean_absolute_error(y_te, pred_lr)
-r2_lr_train = r2_score(y_tr, lr.predict(X_tr))
-
+y_orig = df.loc[X.index, 'total_time_seconds']
+print("using", len(X.columns), "features")
+# splitting into training and test sets (80% train, 20% test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# we also need the original times for evaluation (not log transformed)
+idx_train, idx_test = train_test_split(X.index, test_size=0.2, random_state=42)
+y_test_orig = df.loc[idx_test, 'total_time_seconds']
+# convert back from log to normal seconds
+def to_seconds(pred):
+    return np.expm1(pred)
 # random forest
-rf = RandomForestRegressor(
-    n_estimators=cfg['models']['random_forest']['n_estimators'],
-    max_depth=cfg['models']['random_forest']['max_depth'],
-    min_samples_leaf=cfg['models']['random_forest']['min_samples_leaf'],
-    random_state=42)
-rf.fit(X_tr, y_tr)
-pred_rf = rf.predict(X_te)
-r2_rf = r2_score(y_te, pred_rf)
-mae_rf = mean_absolute_error(y_te, pred_rf)
-r2_rf_train = r2_score(y_tr, rf.predict(X_tr))
-
+rf = RandomForestRegressor(n_estimators=200, max_depth=None, min_samples_leaf=1, random_state=42)
+rf.fit(X_train, y_train)
+rf_pred = to_seconds(rf.predict(X_test))
+r2_rf = r2_score(y_test_orig, rf_pred)
+mae_rf = mean_absolute_error(y_test_orig, rf_pred)
 # gradient boosting
-gb = GradientBoostingRegressor(n_estimators=50, max_depth=4, random_state=42)
-gb.fit(X_tr, y_tr)
-pred_gb = gb.predict(X_te)
-r2_gb = r2_score(y_te, pred_gb)
-mae_gb = mean_absolute_error(y_te, pred_gb)
-r2_gb_train = r2_score(y_tr, gb.predict(X_tr))
-
-print("Linear: train_r2=" + str(round(r2_lr_train,3)) + " test_r2=" + str(round(r2_lr,3)) + " mae=" + str(round(mae_lr,0)))
-print("RF: train_r2=" + str(round(r2_rf_train,3)) + " test_r2=" + str(round(r2_rf,3)) + " mae=" + str(round(mae_rf,0)))
-print("GradBoost: train_r2=" + str(round(r2_gb_train,3)) + " test_r2=" + str(round(r2_gb,3)) + " mae=" + str(round(mae_gb,0)))
-
-# feature importance
-print("\n=== Feature Importance ===")
-importances = rf.feature_importances_
-feat_imp = []
-for i in range(len(feat)):
-    feat_imp.append([feat[i], importances[i]])
-feat_imp.sort(key=lambda x: x[1], reverse=True)
-for i in range(min(7, len(feat_imp))):
-    print(" ", feat_imp[i][0], ":", round(feat_imp[i][1], 3))
-
-# by game analysis
-print("\n=== By Game ===")
-games = df['game_name'].unique()
-for g in games:
-    sub = df[df['game_name'] == g]
-    if len(sub) >= 10:
-        avg = sub['total_time_seconds'].mean()
-        corr = sub['max_steps'].corr(sub['total_time_seconds'])
-        print(g + ": n=" + str(len(sub)) + " avg=" + str(round(avg,0)) + "s corr=" + str(round(corr,2)))
-
-# cross val
-print("\n=== CV ===")
-scores = cross_val_score(rf, X, y, cv=5, scoring='r2')
-print("mean:", round(scores.mean(), 3))
-print("std:", round(scores.std(), 3))
-
-# plots
-fig = plt.figure(figsize=(10, 8))
-
-# plot 1 - pred vs actual
-ax1 = fig.add_subplot(2, 2, 1)
-# find best model
-best_pred = pred_lr
-best_r2 = r2_lr
-if r2_rf > best_r2:
-    best_pred = pred_rf
-    best_r2 = r2_rf
-if r2_gb > best_r2:
-    best_pred = pred_gb
+gb = GradientBoostingRegressor(n_estimators=300, max_depth=6, learning_rate=0.05, random_state=42)
+gb.fit(X_train, y_train)
+gb_pred = to_seconds(gb.predict(X_test))
+r2_gb = r2_score(y_test_orig, gb_pred)
+mae_gb = mean_absolute_error(y_test_orig, gb_pred)
+print("Random Forest:     R2=" + str(round(r2_rf, 3)) + " MAE=" + str(round(mae_rf, 0)) + "s")
+print("Gradient Boosting: R2=" + str(round(r2_gb, 3)) + " MAE=" + str(round(mae_gb, 0)) + "s")
+# checking which one is better
+if r2_gb > r2_rf:
+    best_name = "Gradient Boosting"
     best_r2 = r2_gb
-ax1.scatter(y_te, best_pred, alpha=0.5, s=15)
-min_val = min(y_te.min(), min(best_pred))
-max_val = max(y_te.max(), max(best_pred))
-ax1.plot([min_val, max_val], [min_val, max_val], 'r--')
-ax1.set_xlabel('Actual (s)')
-ax1.set_ylabel('Predicted (s)')
-ax1.set_title('Pred vs Actual R2=' + str(round(best_r2, 3)))
+    best_pred = gb_pred
+else:
+    best_name = "Random Forest"
+    best_r2 = r2_rf
+    best_pred = rf_pred
 
-# plot 2 - feature imp
-ax2 = fig.add_subplot(2, 2, 2)
-top_n = 8
-names = []
-vals = []
-for i in range(min(top_n, len(feat_imp))):
-    names.append(feat_imp[i][0])
-    vals.append(feat_imp[i][1])
-ax2.barh(names, vals)
+print("\nBest model: " + best_name + " with R2=" + str(round(best_r2, 3)))
+
+
+# cross validation to check if results are consistent
+print("\nCross validation (5-fold):")
+cv_rf = cross_val_score(rf, X, y, cv=5, scoring='r2')
+cv_gb = cross_val_score(gb, X, y, cv=5, scoring='r2')
+print("Random Forest:     mean=" + str(round(cv_rf.mean(), 3)) + " std=" + str(round(cv_rf.std(), 3)))
+print("Gradient Boosting: mean=" + str(round(cv_gb.mean(), 3)) + " std=" + str(round(cv_gb.std(), 3)))
+print("(note: CV scores are on log scale)")
+
+
+# feature importance from random forest
+print("\nTop features:")
+importances = rf.feature_importances_
+feat_names = X.columns.tolist()
+
+# put them together and sort
+feat_imp = []
+for i in range(len(feat_names)):
+    feat_imp.append([feat_names[i], importances[i]])
+feat_imp.sort(key=lambda x: x[1], reverse=True)
+
+for i in range(5):
+    print(feat_imp[i][0] + ": " + str(round(feat_imp[i][1], 3)))
+# stats per game
+print("\nPer game stats:")
+for g in games:
+    subset = df[df['game_name'] == g]
+    if len(subset) >= 10:
+        avg = subset['total_time_seconds'].mean()
+        print(g + ": n=" + str(len(subset)) + " avg=" + str(round(avg, 0)) + "s")
+
+
+# training separate models for each game (predicting time directly, no log transform)
+print("\nPer game models:")
+per_game_results = []
+for g in games:
+    gdf = df[df['game_name'] == g]
+    if len(gdf) >= 300:  # need at least 300 samples for reliable results
+        # not using game columns for per-game model
+        gcols = [c for c in X.columns if not c.startswith('game_')]
+        Xg = gdf[gcols].dropna()
+        yg_orig = gdf.loc[Xg.index, 'total_time_seconds']
+
+        if len(Xg) >= 300:
+            Xg_train, Xg_test, yg_train, yg_test = train_test_split(Xg, yg_orig, test_size=0.2, random_state=42)
+
+            grf = RandomForestRegressor(n_estimators=200, max_depth=None, random_state=42)
+            grf.fit(Xg_train, yg_train)
+            gpred = grf.predict(Xg_test)
+            gr2 = r2_score(yg_test, gpred)
+
+            per_game_results.append([g, len(Xg), gr2])
+            print(g + ": n=" + str(len(Xg)) + " R2=" + str(round(gr2, 3)))
+
+per_game_results.sort(key=lambda x: x[2], reverse=True)
+
+
+# ploting
+fig1 = plt.figure(figsize=(10, 8))
+
+# predicted vs actual
+ax1 = fig1.add_subplot(2, 2, 1)
+ax1.scatter(y_test_orig, best_pred, alpha=0.5, s=10)
+minv = min(y_test_orig.min(), min(best_pred))
+maxv = max(y_test_orig.max(), max(best_pred))
+ax1.plot([minv, maxv], [minv, maxv], 'r--')
+ax1.set_xlabel('Actual Time (s)')
+ax1.set_ylabel('Predicted Time (s)')
+ax1.set_title('Predictions vs Actual (R2=' + str(round(best_r2, 3)) + ')')
+
+# feature importance bar chart
+ax2 = fig1.add_subplot(2, 2, 2)
+top_feat = feat_imp[:8]
+ax2.barh([x[0] for x in top_feat], [x[1] for x in top_feat])
 ax2.set_xlabel('Importance')
-ax2.set_title('Feature Importance')
+ax2.set_title('Top Features')
 ax2.invert_yaxis()
 
-# plot 3 - time by game
-ax3 = fig.add_subplot(2, 2, 3)
-game_times = df.groupby('game_name')['total_time_seconds'].mean()
-game_times = game_times.sort_values()
-ax3.barh(game_times.index, game_times.values)
-ax3.set_xlabel('Avg Time (s)')
-ax3.set_title('Time by Game')
+# avg time per game
+ax3 = fig1.add_subplot(2, 2, 3)
+game_avg = df.groupby('game_name')['total_time_seconds'].mean().sort_values()
+ax3.barh(game_avg.index, game_avg.values)
+ax3.set_xlabel('Average Time (s)')
+ax3.set_title('Training Time by Game')
 
-# plot 4 errors
-ax4 = fig.add_subplot(2, 2, 4)
-errors = []
-for i in range(len(y_te)):
-    errors.append(y_te.iloc[i] - best_pred[i])
-ax4.hist(errors, bins=30, edgecolor='black')
+# eror histogram
+ax4 = fig1.add_subplot(2, 2, 4)
+errs = y_test_orig.values - best_pred
+ax4.hist(errs, bins=30, edgecolor='black')
 ax4.axvline(0, color='r', linestyle='--')
-ax4.set_xlabel('Error (s)')
-ax4.set_title('Prediction Errors')
+ax4.set_xlabel('Prediction Error (s)')
+ax4.set_title('Error Distribution')
 
 plt.tight_layout()
 plt.savefig(cfg['output_plot'])
-print("\nsaved plot to", cfg['output_plot'])
+print("\nSaved plot to", cfg['output_plot'])
 
-# save txt
+
+# second figure with more plots
+fig2 = plt.figure(figsize=(10, 8))
+
+# distribution of times
+ax5 = fig2.add_subplot(2, 2, 1)
+ax5.hist(df['total_time_seconds'], bins=50, edgecolor='black', alpha=0.7)
+ax5.set_xlabel('Training Time (s)')
+ax5.set_ylabel('Count')
+ax5.set_title('Distribution of Training Times')
+ax5.axvline(df['total_time_seconds'].mean(), color='r', linestyle='--', label='Mean')
+ax5.legend()
+
+# time vs steps scatter
+ax6 = fig2.add_subplot(2, 2, 2)
+ax6.scatter(df['max_steps'], df['total_time_seconds'], alpha=0.3, s=5)
+ax6.set_xlabel('Max Steps')
+ax6.set_ylabel('Training Time (s)')
+ax6.set_title('Training Time vs Max Steps')
+
+# samples per game
+ax7 = fig2.add_subplot(2, 2, 3)
+gcounts = df['game_name'].value_counts().sort_values()
+ax7.barh(gcounts.index, gcounts.values, color='steelblue')
+ax7.set_xlabel('Number of Samples')
+ax7.set_title('Samples per Game')
+
+# model comparison
+ax8 = fig2.add_subplot(2, 2, 4)
+ax8.bar(['Random Forest', 'Gradient Boosting'], [r2_rf, r2_gb], color=['steelblue', 'green'])
+ax8.set_ylabel('R2 Score')
+ax8.set_title('Model Comparison')
+ax8.set_ylim(0, 1.0)
+
+plt.tight_layout()
+plt.savefig('time_prediction_analysis.png')
+print("Saved plot to time_prediction_analysis.png")
+
+
+# save results to file
 f = open('results_summary.txt', 'w')
-f.write("RQ1 Results\n")
-f.write("===========\n\n")
-f.write("Samples: " + str(len(X)) + "\n")
-f.write("Features: " + str(len(feat)) + "\n\n")
-f.write("Linear: R2=" + str(round(r2_lr,3)) + " MAE=" + str(round(mae_lr,0)) + "\n")
-f.write("RF: R2=" + str(round(r2_rf,3)) + " MAE=" + str(round(mae_rf,0)) + "\n")
-f.write("GradBoost: R2=" + str(round(r2_gb,3)) + " MAE=" + str(round(mae_gb,0)) + "\n\n")
-f.write("Top features:\n")
+f.write("RQ1: Training Time Prediction Results\n")
+f.write("======================================\n\n")
+f.write("Dataset: " + str(len(X)) + " samples, " + str(len(X.columns)) + " features\n\n")
+f.write("Model Performance (on test set):\n")
+f.write("  Random Forest:     R2=" + str(round(r2_rf, 3)) + " MAE=" + str(round(mae_rf, 0)) + "s\n")
+f.write("  Gradient Boosting: R2=" + str(round(r2_gb, 3)) + " MAE=" + str(round(mae_gb, 0)) + "s\n")
+f.write("\nBest Model: " + best_name + " (R2=" + str(round(best_r2, 3)) + ")\n")
+f.write("\nCross Validation (5-fold):\n")
+f.write("  Random Forest:     mean=" + str(round(cv_rf.mean(), 3)) + " std=" + str(round(cv_rf.std(), 3)) + "\n")
+f.write("  Gradient Boosting: mean=" + str(round(cv_gb.mean(), 3)) + " std=" + str(round(cv_gb.std(), 3)) + "\n")
+f.write("\nTop 5 Important Features:\n")
 for i in range(5):
-    f.write("  " + feat_imp[i][0] + ": " + str(round(feat_imp[i][1],3)) + "\n")
+    f.write("  " + feat_imp[i][0] + ": " + str(round(feat_imp[i][1], 3)) + "\n")
+f.write("\nPer Game Model Results:\n")
+for r in per_game_results:
+    f.write("  " + r[0] + ": n=" + str(r[1]) + " R2=" + str(round(r[2], 3)) + "\n")
 f.close()
-print("saved results_summary.txt")
+print("Saved results to results_summary.txt")
