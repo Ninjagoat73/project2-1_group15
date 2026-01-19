@@ -43,6 +43,7 @@ public class FoodCollectorAgent : Agent
         m_FoodCollecterSettings = FindObjectOfType<FoodCollectorSettings>();
         m_ResetParams = Academy.Instance.EnvironmentParameters;
         SetResetParameters();
+        base.InitializeLoggingVariables();
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -186,7 +187,9 @@ public class FoodCollectorAgent : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
+        base.CheckAndLogFirstPart();
         MoveAgent(actionBuffers);
+        // base.ManageStepCount();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -226,6 +229,7 @@ public class FoodCollectorAgent : Agent
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
 
         SetResetParameters();
+        base.LogEpisodeTime();
     }
 
     void OnCollisionEnter(Collision collision)

@@ -15,21 +15,13 @@ public class Ball3DAgent : Agent
     public bool useVecObs;
     Rigidbody m_BallRb;
     EnvironmentParameters m_ResetParams;
-    StatsRecorder recorder;
-    PerformanceLogger logger;
-    int frequency = 12000;
-
-    int stepCount;
-    Process mainProcess = Process.GetCurrentProcess();
-
     public override void Initialize()
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_ResetParams = Academy.Instance.EnvironmentParameters;
-        recorder = Academy.Instance.StatsRecorder;
-        logger = new PerformanceLogger(recorder, mainProcess, frequency);
         SetResetParameters();
-        stepCount = 0;
+        // Add next line
+        base.InitializeLoggingVariables();
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -45,18 +37,12 @@ public class Ball3DAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        // Add next line
+        base.CheckAndLogFirstPart();
+
         var actionZ = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f);
         var actionX = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f);
-
-        // recorder.Add("frequency", frequency, StatAggregationMethod.Average);
-        if (stepCount == 0)
-        {
-            logger.LogStepTime();
-            logger.LogPerformanceData();
-        }
         
-        // recorder.Add("cpuUsage", cpuCounter.NextValue(), StatAggregationMethod.Average);
-
         if ((gameObject.transform.rotation.z < 0.25f && actionZ > 0f) ||
             (gameObject.transform.rotation.z > -0.25f && actionZ < 0f))
         {
@@ -79,8 +65,8 @@ public class Ball3DAgent : Agent
         {
             SetReward(0.1f);
         }
-        stepCount++;
-        if (stepCount >= frequency) stepCount = 0;
+        // Add next line
+        // base.ManageStepCount();
     }
 
     public override void OnEpisodeBegin()
@@ -93,7 +79,8 @@ public class Ball3DAgent : Agent
             + gameObject.transform.position;
         //Reset the parameters when the Agent is reset.
         SetResetParameters();
-        logger.LogEpisodeTime();
+        // Add next line 
+        base.LogEpisodeTime();
     }
 
 

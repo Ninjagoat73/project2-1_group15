@@ -5,8 +5,38 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/ML-Agents/Examples/3DBall/Scenes/3DBall.unity
     guid: b9ac0cbf961bf4dacbfa0aa9c0d60aaa
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Crawler/Scenes/Crawler.unity
+    guid: 7ada20f4d7ae04f2d946cac21135ecbd
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/FoodCollector/Scenes/FoodCollector.unity
+    guid: 74aeee1f5073c4998840fc784793f1ef
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/PushBlock/Scenes/PushBlock.unity
+    guid: ae8cc75939e3e4d07a79c8c6a08b54f4
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/GridWorld/Scenes/GridWorld.unity
+    guid: c6fdbb551d80c435abe6fc911b1ea11f
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/3DBall/Scenes/3DBallHard.unity
+    guid: 35c41099ceec44889bdbe95ed86c97ac
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Hallway/Scenes/Hallway.unity
+    guid: d6d6a33ed0e18459a8d61817d600978a
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Sorter/Scenes/Sorter.unity
+    guid: f23c5f09c95ad48768a41974a2f1523c
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Pyramids/Scenes/Pyramids.unity
+    guid: 35afbc150a44b4aa69ca04685486b5c4
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Walker/Scenes/Walker.unity
+    guid: 2b839ee93e7a4467f9f8b4803c4a239b
+  - enabled: 1
+    path: Assets/ML-Agents/Examples/Worm/Scenes/Worm.unity
+    guid: 2d569bb9615d8480f82ec9eab5fb4cf2
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

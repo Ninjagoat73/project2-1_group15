@@ -15,6 +15,7 @@ public class Ball3DHardAgent : Agent
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_ResetParams = Academy.Instance.EnvironmentParameters;
         SetResetParameters();
+        base.InitializeLoggingVariables();
     }
 
     [Observable(numStackedObservations: 9)]
@@ -38,6 +39,7 @@ public class Ball3DHardAgent : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
+        base.CheckAndLogFirstPart();
         var continuousActions = actionBuffers.ContinuousActions;
         var actionZ = 2f * Mathf.Clamp(continuousActions[0], -1f, 1f);
         var actionX = 2f * Mathf.Clamp(continuousActions[1], -1f, 1f);
@@ -64,6 +66,7 @@ public class Ball3DHardAgent : Agent
         {
             SetReward(0.1f);
         }
+        // base.ManageStepCount();
     }
 
     public override void OnEpisodeBegin()
@@ -74,6 +77,7 @@ public class Ball3DHardAgent : Agent
         m_BallRb.velocity = new Vector3(0f, 0f, 0f);
         ball.transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 4f, Random.Range(-1.5f, 1.5f))
             + gameObject.transform.position;
+        base.LogEpisodeTime();
     }
 
     public void SetBall()

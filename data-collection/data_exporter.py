@@ -16,7 +16,8 @@ def create_static_csv(run_id: str, yaml_path: str):
     print("YAML data to be added to entry:", yaml_data)
 
     data_dict = create_static_dict(run_id, hardware_data, yaml_data)
-    filename = Path("static.csv")
+    filename = Path("data/static.csv")
+    print("writing to file: ", filename)
     try:
         if filename.is_file():
             with open(filename, 'a', newline='') as csvfile:

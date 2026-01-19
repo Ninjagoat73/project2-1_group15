@@ -198,6 +198,14 @@ namespace Unity.MLAgents
     [DefaultExecutionOrder(-50)]
     public partial class Agent : MonoBehaviour, ISerializationCallbackReceiver, IActionReceiver, IHeuristicProvider
     {
+        // Added
+        PerformanceLogger logger;
+        int frequency;
+
+        int stepCount;
+        System.Diagnostics.Process mainProcess;
+        // End
+
         IPolicy m_Brain;
         BehaviorParameters m_PolicyFactory;
 
@@ -1422,6 +1430,43 @@ namespace Unity.MLAgents
                     throw new UnityAgentsException("Agent is already registered with a group. Unregister it first.");
                 }
             }
+        }
+
+        public void InitializeLoggingVariables()
+        {
+            frequency = 1000;
+            stepCount = 0;
+            mainProcess = System.Diagnostics.Process.GetCurrentProcess();
+            logger = new PerformanceLogger(Academy.Instance.StatsRecorder, mainProcess, frequency);
+        }
+
+        public void CheckAndLogFirstPart()
+        {
+            if (stepCount > frequency) stepCount = 0;
+            if (stepCount == 0)
+            {
+                logger.LogStepTimeAndStepPerSecond();
+                logger.LogPerformanceData();
+                logger.LogTimeElapsed();
+            }
+            stepCount++;
+            // ManageStepCount();
+        }
+
+        public void LogEpisodeTime()
+        {
+            logger.LogEpisodeTime();
+        }
+
+        // private void ManageStepCount()
+        // {
+        //     stepCount++;
+        //     if (stepCount > frequency) stepCount = 0;
+        // }
+
+        public PerformanceLogger Logger
+        {
+            get { return logger; }
         }
     }
 }

@@ -76,6 +76,7 @@ public class PushAgentBasic : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
+        base.InitializeLoggingVariables();
     }
 
     /// <summary>
@@ -168,11 +169,13 @@ public class PushAgentBasic : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
+        base.CheckAndLogFirstPart();
         // Move the agent using the action.
         MoveAgent(actionBuffers.DiscreteActions);
 
         // Penalty given each step to encourage agent to finish task quickly.
         AddReward(-1f / MaxStep);
+        // base.ManageStepCount();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -227,6 +230,7 @@ public class PushAgentBasic : Agent
         m_AgentRb.angularVelocity = Vector3.zero;
 
         SetResetParameters();
+        base.LogEpisodeTime();
     }
 
     public void SetGroundMaterialFriction()

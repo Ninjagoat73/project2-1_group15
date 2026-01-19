@@ -85,6 +85,7 @@ public class CrawlerAgent : Agent
         m_JdController.SetupBodyPart(leg2Lower);
         m_JdController.SetupBodyPart(leg3Upper);
         m_JdController.SetupBodyPart(leg3Lower);
+        base.InitializeLoggingVariables();
     }
 
     /// <summary>
@@ -114,6 +115,7 @@ public class CrawlerAgent : Agent
 
         //Set our goal walking speed
         TargetWalkingSpeed = Random.Range(0.1f, m_maxWalkingSpeed);
+        base.LogEpisodeTime();
     }
 
     /// <summary>
@@ -171,6 +173,7 @@ public class CrawlerAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        base.CheckAndLogFirstPart();
         // The dictionary with all the body parts in it are in the jdController
         var bpDict = m_JdController.bodyPartsDict;
 
@@ -195,6 +198,7 @@ public class CrawlerAgent : Agent
         bpDict[leg1Lower].SetJointStrength(continuousActions[++i]);
         bpDict[leg2Lower].SetJointStrength(continuousActions[++i]);
         bpDict[leg3Lower].SetJointStrength(continuousActions[++i]);
+        // base.ManageStepCount();
     }
 
     void FixedUpdate()

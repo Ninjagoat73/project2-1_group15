@@ -1,30 +1,56 @@
 import data_exporter
 import yaml_reader
+from config_yaml_reader import extract_batch_config_file
 import os
 import sys
 import datetime
 import subprocess
 import yaml_generator
+import platform
+import sys
+import extract_mlagents_data
+import summary_maker
 
-def run_training(yaml_path: str, run_id: str, executable_path: str):
+DEBUG = False
+
+def run_training(yaml_path: str, run_id: str, executable_path: str, results_path: str, data_path:str):
     result = subprocess.run([
         "mlagents-learn",
         yaml_path,
         "--env=" + executable_path,
         "--run-id=" + run_id,
-#        "--no-graphics"
+        "--no-graphics"
     ])
     if result.returncode != 0:
         print("Training failed. No entry will be added to static.csv")
         return
+    print("Static appending started...")
     data_exporter.create_static_csv(run_id, yaml_path)
 
-if len(sys.argv) < 2:
-    print("Usage: python3 training_scipt.py <path-to-executable-folder>")
+    training_csv = os.path.join(data_path, "training.csv")
+    summary_csv = os.path.join(data_path, "summary.csv")
+
+    print("Training appending started...")
+    extract_mlagents_data.extract_single_run(results_path, run_id, training_csv)
+
+    print("Summary appending started...")
+    summary_maker.summarize_single_run(run_id,training_csv, summary_csv)
+
+
+if len(sys.argv) < 5:
+    print("Usage: python3 training_scipt.py <path-to-executable-folder> <path-to-results-folder> <path-to-data-folder> <path-to-batch-yaml-file>")
     sys.exit(0)
 
-yamls = yaml_generator.generate_batch()
+games = ['Crawler','GridFoodCollector','Hallway','PushBlock','Pyramids','Sorter','Walker','Worm']
+# games = ['3DBall','3DBallHard', 'Crawler','GridFoodCollector','GridWorld','Hallway','PushBlock','Pyramids','Sorter','Walker','Worm']
+
 executable_folder_path = sys.argv[1]
+results_folder_path = sys.argv[2]
+data_path = sys.argv[3]
+batch_config = extract_batch_config_file(sys.argv[4])
+os_name = platform.system()
+
+yamls = yaml_generator.generate_batch(count_per_algorithm=batch_config["batch_size"], behaviours=batch_config["games"], algorithms = batch_config["algorithms"])
 
 if not os.path.isdir(executable_folder_path):
     print(f"Error: '{executable_folder_path}' is not a valid directory.")
@@ -42,6 +68,10 @@ for success, yaml in yamls:
         print(f"File being parsed: {yaml}")
         yaml_dict = yaml_reader.extract_static_yaml_value(yaml)
         game_name = yaml_dict['game_name']
-        executable_path = executable_folder_path + "/" + game_name + ".app"
+        if os_name == "Darwin":
+            executable_path = executable_folder_path + "/" + game_name + ".app"
+        else:
+            executable_path = executable_folder_path + "\\" + game_name
         print("executable path;", executable_path)
-        run_training(yaml, run_id, executable_path)
+        if not DEBUG: run_training(yaml, run_id, executable_path, results_folder_path, data_path)
+        else: print(f"Would run a training with following args: yaml = {yaml} run_id = {run_id}, executable_path = {executable_path}, results_folder_path = {results_folder_path}, data_path = {data_path}")

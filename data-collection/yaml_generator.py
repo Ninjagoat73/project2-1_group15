@@ -161,7 +161,7 @@ def make_ppo_config(max_steps: int,
         "keep_checkpoints": kwargs.get('keep_checkpoints', 5),
         "max_steps": max_steps,
         "time_horizon": time_horizon,
-        "summary_freq": kwargs.get('summary_freq', random.choice([10000, 25000, 50000])),
+        "summary_freq": 12000,
     }
 
     return config
@@ -333,7 +333,7 @@ def generate_yaml(training_type: str,
 # Batch Generation Function
 # ============================================================================
 
-def generate_batch(algorithms: List[str] = ['ppo','sac'],
+def generate_batch(algorithms: List[str] = ['ppo'],
                    behaviours: List[str] = ['3DBall','Crawler','GridFoodCollector','PushBlock'],
                   count_per_algorithm: int = 20,
                   output_dir: str = "generated",
@@ -351,7 +351,6 @@ def generate_batch(algorithms: List[str] = ['ppo','sac'],
         List of (success, path_or_error) tuples
     """
     results = []
-    behaviours = ['3DBall'] # TEMPORARY
     for algo in algorithms:
         for behaviour in behaviours:
             for i in range(count_per_algorithm):
@@ -364,7 +363,8 @@ def generate_batch(algorithms: List[str] = ['ppo','sac'],
                 results.append((success, path))
 
                 if success:
-                    print(f"Generated {algo.upper()} config {i+1}/{count_per_algorithm}: {path}")
+                    pass
+                    #print(f"Generated {algo.upper()} config {i+1}/{count_per_algorithm}: {path}")
                 else:
                     print(f"Failed to generate {algo.upper()} config {i+1}: {path}")
 
@@ -375,4 +375,4 @@ def generate_batch(algorithms: List[str] = ['ppo','sac'],
 # ============================================================================
 
 if __name__ == "__main__":
-    generate_batch(['ppo','sac'])
+    generate_batch(['ppo'])

@@ -20,6 +20,7 @@ public class PyramidAgent : Agent
         m_AgentRb = GetComponent<Rigidbody>();
         m_MyArea = area.GetComponent<PyramidArea>();
         m_SwitchLogic = areaSwitch.GetComponent<PyramidSwitch>();
+        base.InitializeLoggingVariables();
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -59,8 +60,10 @@ public class PyramidAgent : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
+        base.CheckAndLogFirstPart();
         AddReward(-1f / MaxStep);
         MoveAgent(actionBuffers.DiscreteActions);
+        // base.ManageStepCount();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -102,6 +105,7 @@ public class PyramidAgent : Agent
         m_MyArea.CreateStonePyramid(1, items[6]);
         m_MyArea.CreateStonePyramid(1, items[7]);
         m_MyArea.CreateStonePyramid(1, items[8]);
+        base.LogEpisodeTime();
     }
 
     void OnCollisionEnter(Collision collision)
