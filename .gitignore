@@ -115,6 +115,7 @@ coverage.xml
 # yamato-parser temporary output files:
 .yamato/unfolded/
 
+*.joblib
 # local training files
 data-collection/executables/
 data-collection/Foodcollector/
