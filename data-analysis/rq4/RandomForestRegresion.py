@@ -9,12 +9,50 @@ from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.metrics import r2_score, mean_squared_error
 import CsvMerger
+import sys
+import yaml
 
+def read_config_as_dict(config_file_path : str):
+    conf_dict = {
+        "random_state": 42,
+        "n_estimators": 100,
+        "max_depth":15,
+        "min_samples_leaf":6,
+        "n_jobs" : -1,
+        "random_state_model" : 42,
+        "cv_folds" : 10
+        }
+    with open(config_file_path, 'r', encoding='utf-8-sig') as f:
+        try:
+            full_yaml = yaml.safe_load(f)["rq4"]
+            print(full_yaml)
+            conf_dict["random_state"] = full_yaml["random_state"]
+            conf_dict["n_estimators"] = full_yaml["n_estimators"]
+            conf_dict["max_depth"] = full_yaml["max_depth"]
+            conf_dict["min_samples_leaf"] = full_yaml["min_samples_leaf"]
+            conf_dict["max_features"] = full_yaml["max_features"]
+            conf_dict["n_jobs"] = full_yaml["n_jobs"]
+            conf_dict["random_state_model"] = full_yaml["random_state_model"]
+            conf_dict["cv_folds"] = full_yaml["cv_folds"]
+            return conf_dict
+        except yaml.YAMLError as exc:
+            print(exc)
+            return conf_dict
+
+if len(sys.argv) < 2:
+    print("Usage: python rq4.py <path_to_config_file>")
+    sys.exit(0)
+
+config_file_path = sys.argv[1]
+conf_dict = read_config_as_dict(config_file_path)
+global RANDOM_STATE
+RANDOM_STATE = conf_dict["random_state"]
+print(RANDOM_STATE)
+    
 CsvMerger.generate_input()
 
-
 df = pd.read_csv('input.csv')
-df = df.sample(frac=1, random_state=42).reset_index(drop=True)
+df = df.sample(frac=1, random_state=conf_dict["random_state"]).reset_index(drop=True)
 
 # Feature setup
 numeric_features = ['final_reward','mean_cpu_frequency', 'physical_cores','system_ram_gb', 'GPU_ram_mb','cpu_usage_percent',
@@ -43,7 +81,7 @@ df[target_columns] = df[target_columns].fillna(0)
 
 X = df[feature_columns]
 y = df[target_columns]
-X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=conf_dict["random_state"])
 
 preprocessor = ColumnTransformer(transformers=[
     ('text_idx', OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1), text_features),
@@ -51,12 +89,12 @@ preprocessor = ColumnTransformer(transformers=[
 ])
 
 rf_regularized = RandomForestRegressor(
-    n_estimators = 100,
-    max_depth = 15,
-    min_samples_leaf = 6,
-    max_features = 'sqrt',
-    n_jobs=-1,
-    random_state=42
+    n_estimators = conf_dict["n_estimators"],
+    max_depth = conf_dict["max_depth"],
+    min_samples_leaf = conf_dict["min_samples_leaf"],
+    max_features = conf_dict["max_features"],
+    n_jobs=conf_dict["n_jobs"],
+    random_state=conf_dict["random_state_model"]
 )
 
 pipeline = Pipeline(steps=[
@@ -67,8 +105,8 @@ pipeline = Pipeline(steps=[
     ))
 ])
 
-cv_scores = cross_val_score(pipeline, X_train, y_train, cv = 10, scoring ='r2')
-cv_scores2 = -cross_val_score(pipeline, X_train, y_train, cv = 10, scoring ='neg_mean_squared_error')
+cv_scores = cross_val_score(pipeline, X_train, y_train, cv = conf_dict["cv_folds"], scoring ='r2')
+cv_scores2 = -cross_val_score(pipeline, X_train, y_train, cv = conf_dict["cv_folds"], scoring ='neg_mean_squared_error')
 avg_cv_r2 = np.mean(cv_scores)
 avg_cv_MSE = np.mean(cv_scores2)
 print(f"Overall CV R2 Score: {avg_cv_r2:.4f}")
