@@ -29,9 +29,8 @@ Since we've modified the ML Agents library, we need to compile it ourselves (not
 
 Use [this guide](https://docs.unity3d.com/Packages/com.unity.ml-agents@4.0/manual/Installation.html) for troubleshooting
 
+## Generating data
+In order to train Unity models and generate data, please refer to [this readme](https://github.com/Ninjagoat73/project2-1_group15/tree/develop/data-collection#readme)
+
 ## Project status
 The group is currently experimenting with the ML Agents framework and Unity. We are also working on coming up with the research question and thinking of ways to collect data for phase 2 and 3
-
-## Future work
-
-## Limitations
