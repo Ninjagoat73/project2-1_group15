@@ -8,16 +8,12 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.metrics import r2_score, mean_squared_error
+import CsvMerger
 
-# Loading and shuffling data
+CsvMerger.generate_input()
 
-# Summary and static data
-# file_1 = pd.read_csv('data-analysis/static_rows.csv')
-# file_2 = pd.read_csv('data-analysis/summary_rows.csv')
-# df = pd.merge(file_1, file_2, on='RunID', how = 'left')
 
-# Merge of all data
-df = pd.read_csv('data-analysis/input.csv')
+df = pd.read_csv('input.csv')
 df = df.sample(frac=1, random_state=42).reset_index(drop=True)
 
 # Feature setup
@@ -29,7 +25,7 @@ text_features = ['game_name', 'os', 'cpu', 'gpu']
 feature_columns = text_features + numeric_features
 
 # Target setup
-
+df['normalize'] = df['normalize'].fillna(0)
 df['normalize'] = df['normalize'].astype(int)
 text_target_columns = ['training_type', 'learning_rate_schedule', 'vis_encode_type']
 target_encoders = {}
@@ -55,11 +51,11 @@ preprocessor = ColumnTransformer(transformers=[
 ])
 
 rf_regularized = RandomForestRegressor(
-    n_estimators = 100, 
-    max_depth = 15, 
-    min_samples_leaf = 6, 
+    n_estimators = 100,
+    max_depth = 15,
+    min_samples_leaf = 6,
     max_features = 'sqrt',
-    n_jobs=-1, 
+    n_jobs=-1,
     random_state=42
 )
 
@@ -98,17 +94,17 @@ for game in unique_games:
 
     mask_train = X_train['game_name'] == game
     mask_val = X_val['game_name'] == game
-    
+
     # Check if game exists in both splits
     if mask_train.sum() < 2 or mask_val.sum() < 2: continue
-    
+
     # Metrics
     r2_train = r2_score(y_train[mask_train], y_pred_train[mask_train])
     r2_val = r2_score(y_val[mask_val], y_pred_val[mask_val])
     rmse_val = np.sqrt(mean_squared_error(y_val[mask_val], y_pred_val[mask_val]))
-    
+
     print(f"{game:<20} | {r2_train:>10.4f} | {r2_val:>10.4f} | {rmse_val:>10.4f} | {mask_val.sum():>6}")
-    
+
     summary_report.append({
         'Game': game,
         'Train_R2': r2_train,
