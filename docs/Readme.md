@@ -25,6 +25,7 @@ Since we've modified the ML Agents library, we need to compile it ourselves (not
 5. Install our requirements ``` pip install -r requirements.txt ``` (or pip3)
 6. Install ml-agents-envs ``` cd ml-agents-envs && pip install -e . ```
 7. Install ml-agents ``` cd ../ml-agents && pip install -e . ```
+8. Unzip data.zip in ``` data-collection/data/data.zip``` (overwrite the files if prompted)
 
 Use [this guide](https://docs.unity3d.com/Packages/com.unity.ml-agents@4.0/manual/Installation.html) for troubleshooting
 
