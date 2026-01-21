@@ -32,5 +32,8 @@ Use [this guide](https://docs.unity3d.com/Packages/com.unity.ml-agents@4.0/manua
 ## Generating data
 In order to train Unity models and generate data, please refer to [this readme](https://github.com/Ninjagoat73/project2-1_group15/tree/develop/data-collection#readme)
 
+## Running the Machine Learning experiments
+Go to [this folder](https://github.com/Ninjagoat73/project2-1_group15/tree/develop/data-analysis). There are 5 different folders, each one corresponding to one research question. Each folder has a readme file with instructions on how to reproduce each experiment
+
 ## Project status
 The group is currently experimenting with the ML Agents framework and Unity. We are also working on coming up with the research question and thinking of ways to collect data for phase 2 and 3
