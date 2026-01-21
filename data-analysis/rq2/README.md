@@ -1,7 +1,7 @@
 # RQ2 model
 ## Command-line usage
 To run the script simply type this command in the terminal:
->python clustering.py python rq2.py <path_to_config_file>
+>python3 rq2.py <path_to_config_file>
 
 ## Config file structure
 The config file is a simple yaml file with following structure:
